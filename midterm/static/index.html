@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Laptop Predictor</title>
+    <script src="https://cdn.jsdelivr.net/npm/vue@2.6.14/dist/vue.min.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+        }
+        .container {
+            width: 80%;
+            margin: auto;
+            max-width: 1200px;
+        }
+        header, footer {
+            background-color: #f1f1f1;
+            padding: 10px 0;
+            text-align: left;
+            margin-bottom: 20px;
+        }
+        footer {
+            margin-top: 20px;
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+        }
+        input[type="text"] {
+            margin: 5px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+        td.active {
+            background-color: #4CAF50;
+            color: white;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+    </style>
+</head>
+<body>
+    <div id="app">
+        <header>
+            <div class="container">
+                Laptop Predictor
+            </div>
+        </header>
+
+        <div class="container">
+            <form @submit.prevent="submitForm">
+                <input v-model="laptop.brand" type="text" placeholder="Brand">
+                <input v-model="laptop.screen_size" type="text" placeholder="Screen Size">
+                <input v-model="laptop.cpu" type="text" placeholder="CPU">
+                <input v-model="laptop.OS" type="text" placeholder="OS">
+                <input v-model="laptop.cpu_mfr" type="text" placeholder="CPU Manufacturer">
+                <input v-model="laptop.graphics_type" type="text" placeholder="Graphics Type">
+                <input v-model="laptop.graphics_mfr" type="text" placeholder="Graphics Manufacturer">
+                <input v-model="laptop.harddisk_gb" type="text" placeholder="Hard Disk (GB)">
+                <input v-model="laptop.ram_gb" type="text" placeholder="RAM (GB)">
+                <button type="submit">Predict</button>
+            </form>
+            <table v-if="predictions.length">
+                <thead>
+                    <tr>
+                        <th v-for="(value, key) in predictions[0]" :key="key">
+                            {{ key }}
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr v-for="(prediction, index) in predictions" :key="index" >
+                        <td v-for="(value, key) in prediction" :key="key" :class="{ active: prediction['diff'] === 0 }">
+                            {{ value }}
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <footer>
+            <div class="container">
+                Tzvi Friedman
+            </div>
+        </footer>
+    </div>
+
+    <script>
+        new Vue({
+            el: '#app',
+            data: {
+                laptop: {
+                    brand: '',
+                    screen_size: '',
+                    cpu: '',
+                    OS: '',
+                    cpu_mfr: '',
+                    graphics_type: '',
+                    graphics_mfr: '',
+                    harddisk_gb: '',
+                    ram_gb: ''
+                },
+                predictions: []
+            },
+            methods: {
+                submitForm() {
+                    fetch('/predict', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify(this.laptop)
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        this.predictions = data.results.top10 || [];
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                    });
+                }
+            }
+        });
+    </script>
+</body>
+</html>
