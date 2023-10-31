@@ -26,10 +26,19 @@ There were also a significant amount of inconsistency in many of the columns and
 - install poetry on your system `pip install poetry`
 - `poetry shell` to create a new virtual env and activate it
 - `poetry install` will install dev dependencies
+- notebook.ipynb contains prototype code used to clean , run EDA, and test various models and parameter combinations
+- run `train.py` to create or update the model and dv
+- run `predict.py` to create a local Flask server
 
 
 ## Test
 
 ```
  curl http://0.0.0.0:9696/predict --data '{"brand":"dell","screen_size":"14 ","cpu":"i7","OS":"Windows 11 Home","cpu_mfr":"intel","graphics_type":"discrete","graphics_mfr":"nvidia","harddisk_gb":1000,"ram_gb":8}'
+```
+
+also deployed to https://midterm-laptop-price-prediction.onrender.com/
+
+```
+ curl https://midterm-laptop-price-prediction.onrender.com/predict --data '{"brand":"dell","screen_size":"14 ","cpu":"i7","OS":"Windows 11 Home","cpu_mfr":"intel","graphics_type":"discrete","graphics_mfr":"nvidia","harddisk_gb":1000,"ram_gb":8}'
 ```

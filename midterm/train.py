@@ -56,6 +56,7 @@ def predict(df_test, dv, model):
     
 def validate(df_full_train):
     # validation
+    print('-------------------')
     print(f'doing validation')
     kfold = KFold(n_splits=n_splits, shuffle=True)
     scores = []
@@ -74,6 +75,7 @@ def validate(df_full_train):
         fold = fold + 1
     print('validation results:')
     print('%.3f +- %.3f' % ( np.mean(scores), np.std(scores)))
+    print('-------------------')
     
 if __name__ == '__main__':
     data = pd.read_csv('./data/amazon_laptop_prices_v01.csv')
