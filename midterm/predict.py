@@ -30,9 +30,30 @@ with open(DV_PATH, 'rb') as dv_raw:
 with open(MODEL_PATH, 'rb') as model_raw:
     model = pickle.load(model_raw)
 
+categorical_parameter_names = [
+    "brand",
+    "screen_size",
+    "cpu",
+    "OS",
+    "cpu_mfr",
+    "graphics_type",
+    "graphics_mfr",
+]
+parameter_options = {}
+for param in categorical_parameter_names:
+    parameter_options[param] = training_data[param].unique().tolist()
+
+for key in parameter_options:
+    #filter out NaN from the list
+    parameter_options[key] = list(filter(lambda x: x==x, parameter_options[key]))
+
 @app.route("/")
 def index():
-  return send_file('./static/index.html')
+    return send_file('./static/index.html')
+
+@app.route("/parameters")
+def parameters():
+    return jsonify(results=parameter_options)
 
 @app.route('/predict', methods=['POST'])
 def predict():

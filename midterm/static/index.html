@@ -60,13 +60,34 @@
 
         <div class="container">
             <form @submit.prevent="submitForm">
-                <input v-model="laptop.brand" type="text" placeholder="Brand">
-                <input v-model="laptop.screen_size" type="text" placeholder="Screen Size">
-                <input v-model="laptop.cpu" type="text" placeholder="CPU">
-                <input v-model="laptop.OS" type="text" placeholder="OS">
-                <input v-model="laptop.cpu_mfr" type="text" placeholder="CPU Manufacturer">
-                <input v-model="laptop.graphics_type" type="text" placeholder="Graphics Type">
-                <input v-model="laptop.graphics_mfr" type="text" placeholder="Graphics Manufacturer">
+                <select v-model="laptop.brand">
+                    <option value="">Brand</option>
+                    <option v-for="option in parameter_options.brand" :value="option">{{option}}</option>
+                </select>
+                <select v-model="laptop.screen_size">
+                    <option value="">Screen Size</option>
+                    <option v-for="option in parameter_options.screen_size" :value="option">{{option}}</option>
+                </select>
+                <select v-model="laptop.cpu">
+                    <option value="">CPU</option>
+                    <option v-for="option in parameter_options.cpu" :value="option">{{option}}</option>
+                </select>
+                <select v-model="laptop.OS">
+                    <option value="">OS</option>
+                    <option v-for="option in parameter_options.OS" :value="option">{{option}}</option>
+                </select>
+                <select v-model="laptop.cpu_mfr">
+                    <option value="">CPU Manufacturer</option>
+                    <option v-for="option in parameter_options.cpu_mfr" :value="option">{{option}}</option>
+                </select>
+                <select v-model="laptop.graphics_type">
+                    <option value="">Graphics Type</option>
+                    <option v-for="option in parameter_options.graphics_type" :value="option">{{option}}</option>
+                </select>
+                <select v-model="laptop.graphics_mfr">
+                    <option value="">Graphics Manufacturer</option>
+                    <option v-for="option in parameter_options.graphics_mfr" :value="option">{{option}}</option>
+                </select>
                 <input v-model="laptop.harddisk_gb" type="text" placeholder="Hard Disk (GB)">
                 <input v-model="laptop.ram_gb" type="text" placeholder="RAM (GB)">
                 <button type="submit">Predict</button>
@@ -112,6 +133,15 @@
                     harddisk_gb: '',
                     ram_gb: ''
                 },
+                parameter_options: {
+                    brand: [],
+                    screen_size: [],
+                    cpu: [],
+                    OS: [],
+                    cpu_mfr: [],
+                    graphics_type: [],
+                    graphics_mfr: []
+                },
                 price:0,
                 predictions: []
             },
@@ -133,6 +163,18 @@
                         console.error('Error:', error);
                     });
                 }
+            },
+            created(){
+                fetch('/parameters')
+                    .then(response => response.json())
+                    .then(data => {
+                        for (const key in data.results) {
+                            this.parameter_options[key] = data.results[key];
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                    });
             }
         });
     </script>
