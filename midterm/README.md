@@ -32,7 +32,10 @@ There were also a significant amount of inconsistency in many of the columns and
 
 
 ## Test
-
+- `cd midterm`
+- `docker build . -t midterm`
+- `docker run -p 9696:9696 midterm`
+- from another terminal
 ```
  curl http://0.0.0.0:9696/predict --data '{"brand":"dell","screen_size":"14 ","cpu":"i7","OS":"Windows 11 Home","cpu_mfr":"intel","graphics_type":"discrete","graphics_mfr":"nvidia","harddisk_gb":1000,"ram_gb":8}'
 ```
@@ -42,3 +45,20 @@ also deployed to https://midterm-laptop-price-prediction.onrender.com/
 ```
  curl https://midterm-laptop-price-prediction.onrender.com/predict --data '{"brand":"dell","screen_size":"14 ","cpu":"i7","OS":"Windows 11 Home","cpu_mfr":"intel","graphics_type":"discrete","graphics_mfr":"nvidia","harddisk_gb":1000,"ram_gb":8}'
 ```
+or AWS at https://ymnk9nn4ix.us-east-1.awsapprunner.com/
+
+```
+ curl https://ymnk9nn4ix.us-east-1.awsapprunner.com/predict --data '{"brand":"dell","screen_size":"14 ","cpu":"i7","OS":"Windows 11 Home","cpu_mfr":"intel","graphics_type":"discrete","graphics_mfr":"nvidia","harddisk_gb":1000,"ram_gb":8}'
+```
+
+## Cloud deployment
+
+### AWS Co-pilot
+- [Install AWS Copilot](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/AWS_Copilot.html) 
+- `copilot init --app midterm --name laptop-price-prediction --type 'Request-Driven Web Service' --dockerfile './Dockerfile' --port 9696 --deploy`
+- If making changes `copilot deploy`
+- When done `copilot app delete`
+- refer to the [AWS Copilot Documentation](https://aws.github.io/copilot-cli/)
+
+## Render
+- follow instructions to connect to the github repo and deploy

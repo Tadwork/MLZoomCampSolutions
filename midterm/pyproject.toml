@@ -19,6 +19,7 @@ ipykernel = "^6.26.0"
 matplotlib = "^3.8.0"
 numpy = "^1.26.1"
 seaborn = "^0.13.0"
+aws-cdk-lib = "^2.103.1"
 
 [build-system]
 requires = ["poetry-core"]

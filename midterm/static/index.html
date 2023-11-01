@@ -48,13 +48,16 @@
         .prediction-result{
             margin: 10px 0;
         }
+        .align-right {
+            float: right;
+        }
     </style>
 </head>
 <body>
     <div id="app">
         <header>
             <div class="container">
-                Laptop Predictor
+                Laptop Price Predictor
             </div>
         </header>
 
@@ -92,7 +95,7 @@
                 <input v-model="laptop.ram_gb" type="text" placeholder="RAM (GB)">
                 <button type="submit">Predict</button>
             </form>
-            <div v-if="price > 0" v-model="price" class="prediction-result">Prediction result {{price}}</div>
+            <div v-if="price > 0" v-model="price" class="prediction-result">Prediction result ${{price}}</div>
             <table v-if="predictions.length">
                 <thead>
                     <tr>
@@ -113,7 +116,9 @@
 
         <footer>
             <div class="container">
-                Tzvi Friedman
+                Built by <a href="https://www.tzvi.dev/" target="_blank">Tzvi Friedman</a> for <a href="http://mlzoomcamp.com/" target="_blank">ML ZoomCamp Midterm Project</a>
+
+                <a class="align-right" href="https://www.kaggle.com/datasets/talhabarkaatahmad/laptop-prices-dataset-october-2023/data" target="_blank">Dataset</a>
             </div>
         </footer>
     </div>
