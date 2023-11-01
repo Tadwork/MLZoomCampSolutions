@@ -21,7 +21,6 @@ This is not the highest quality dataset though and after some deeper analysis it
 
 There were also a significant amount of inconsistency in many of the columns and I had to make some assumptions to align the values and get a reasonable number of categorical values.
 
-
 ## Development Setup
 - install poetry on your system `pip install poetry`
 - `poetry shell` to create a new virtual env and activate it
@@ -31,6 +30,10 @@ There were also a significant amount of inconsistency in many of the columns and
 - run `train.py` to create or update the model and dv
 - run `predict.py` to create a local Flask server
 
+## Final Model
+
+The final model uses XGBoost and has an RMSE of 421.511 on the test data set and an R2 score of 0.76
+Validation numbers do vary but the model is pretty stable with the r2 score +- 0.032 on multiple folds (run train.py to see your own results)
 
 ## Test
 - `cd midterm`
@@ -41,11 +44,12 @@ There were also a significant amount of inconsistency in many of the columns and
  curl http://0.0.0.0:9696/predict --data '{"brand":"dell","screen_size":"14 ","cpu":"i7","OS":"Windows 11 Home","cpu_mfr":"intel","graphics_type":"discrete","graphics_mfr":"nvidia","harddisk_gb":1000,"ram_gb":8}'
 ```
 
-also deployed to https://midterm-laptop-price-prediction.onrender.com/
+deployed to Render at https://midterm-laptop-price-prediction.onrender.com/
 
 ```
  curl https://midterm-laptop-price-prediction.onrender.com/predict --data '{"brand":"dell","screen_size":"14 ","cpu":"i7","OS":"Windows 11 Home","cpu_mfr":"intel","graphics_type":"discrete","graphics_mfr":"nvidia","harddisk_gb":1000,"ram_gb":8}'
 ```
+
 or AWS at https://ymnk9nn4ix.us-east-1.awsapprunner.com/
 
 ```
@@ -62,4 +66,5 @@ or AWS at https://ymnk9nn4ix.us-east-1.awsapprunner.com/
 - refer to the [AWS Copilot Documentation](https://aws.github.io/copilot-cli/)
 
 ## Render
-- follow instructions to connect to the github repo and deploy
+- follow instructions to connect to the github repo and deploy 
+- or install the render cli and `render config init` and then deploy
