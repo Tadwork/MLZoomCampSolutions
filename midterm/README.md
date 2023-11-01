@@ -27,6 +27,7 @@ There were also a significant amount of inconsistency in many of the columns and
 - `poetry shell` to create a new virtual env and activate it
 - `poetry install` will install dev dependencies
 - notebook.ipynb contains prototype code used to clean , run EDA, and test various models and parameter combinations
+- run `cd midterm` to set the current directory to the midterm folder
 - run `train.py` to create or update the model and dv
 - run `predict.py` to create a local Flask server
 

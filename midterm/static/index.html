@@ -171,12 +171,23 @@
             },
             methods: {
                 submitForm() {
+                    let options = {
+                        brand: this.laptop.brand || null,
+                        screen_size: this.laptop.screen_size || null,
+                        cpu: this.laptop.cpu || null,
+                        OS: this.laptop.OS || null,
+                        cpu_mfr: this.laptop.cpu_mfr || null,
+                        graphics_type: this.laptop.graphics_type || null,
+                        graphics_mfr: this.laptop.graphics_mfr || null,
+                        harddisk_gb: parseFloat(this.laptop.harddisk_gb) || null,
+                        ram_gb: parseFloat(this.laptop.ram_gb) || null
+                    }
                     fetch('/predict', {
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/json',
                         },
-                        body: JSON.stringify(this.laptop)
+                        body: JSON.stringify(options)
                     })
                     .then(response => response.json())
                     .then(data => {
