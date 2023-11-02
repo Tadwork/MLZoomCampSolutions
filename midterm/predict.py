@@ -3,7 +3,7 @@ import os
 
 import pandas as pd
 from flask import Flask, jsonify, request, send_file
-import xgboost as xgb
+# import xgboost as xgb
 
 import clean 
 
@@ -11,16 +11,7 @@ MODEL_PATH = os.getenv('MODEL_PATH','./model.bin')
 DV_PATH = os.getenv('DV_PATH','./dv.bin')
 TRAINING_DATA_PATH = os.getenv('TRAINING_DATA_PATH','./data/amazon_laptop_prices_v01.csv')
 training_data = pd.read_csv(TRAINING_DATA_PATH)    
-training_data = clean.clean_brand(training_data)
-training_data = clean.clean_cpu(training_data)
-training_data = clean.clean_graphics(training_data)
-training_data = clean.clean_harddisk(training_data)
-training_data = clean.clean_os(training_data)
-training_data = clean.clean_price(training_data)
-training_data = clean.clean_ram(training_data)
-training_data = clean.clean_rating(training_data)
-training_data = clean.clean_screen_size(training_data)
-training_data = clean.clean_special_features(training_data)
+training_data = clean.clean_data(training_data)
     
 app = Flask(__name__)
 
@@ -59,11 +50,21 @@ def parameters():
 def predict():
     # get the data
     data = request.get_json(force=True)
-    X_val = dv.transform([data])
-    features = dv.get_feature_names_out().tolist()
-    dtest = xgb.DMatrix(X_val, feature_names=features)
-    
-    prediction = model.predict(dtest)
+    val = [
+        {
+            "brand": data.get('brand') or 'unknown',
+            "screen_size": data.get('screen_size') or 'unknown',
+            "cpu": data.get('cpu') or 'unknown',
+            "OS": data.get('OS') or 'unknown',
+            "cpu_mfr": data.get('cpu_mfr') or 'unknown',
+            "graphics_type": data.get('graphics_type') or 'unknown',
+            "graphics_mfr": data.get('graphics_mfr') or 'unknown',
+            "harddisk_gb": data.get('harddisk_gb') or 0,
+            "ram_gb": data.get('ram_gb') or 0
+        }
+    ]
+    X_val = dv.transform(val)
+    prediction = model.predict(X_val)
     price = round(float(prediction[0]),2)
     
     # find 10 roles with prices closest to the predicted price in the training data

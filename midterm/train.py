@@ -7,10 +7,11 @@ import json
 import numpy as np
 import pandas as pd
 import pickle
+
+from sklearn.linear_model import LinearRegression
 from sklearn.model_selection import KFold, train_test_split
 from sklearn.feature_extraction import DictVectorizer
 from sklearn.metrics import mean_squared_error,r2_score
-import xgboost as xgb
 import clean
 SEED = 65
 n_splits = 5
@@ -19,41 +20,87 @@ def prepare(df):
     df = df.reset_index(drop=True)
     y = df['price'].values
     df = df.drop('price', axis=1)
-    # categorical_columns = list(df.dtypes[ df.dtypes == (object)].index)
-    # numeric_columns = list(df.dtypes[ df.dtypes == (float)].index)
 
-    # for col in categorical_columns:
-    #     df[col].fillna('unknown',inplace=True)
-    # for col in numeric_columns:
-    #     df[col].fillna(0,inplace=True)
+    categorical_columns = list(df.dtypes[ df.dtypes == (object)].index)
+    numeric_columns = list(df.dtypes[ df.dtypes == (float)].index)
+
+    for col in categorical_columns:
+        df[col].fillna('unknown',inplace=True)
+    for col in numeric_columns:
+        df[col].fillna(0,inplace=True)
+    
+        
+    df.reset_index(drop=True, inplace=True)
     return df, y
 
-def train(df_train):
-    dv = DictVectorizer(sparse=True)
+def remove_columns(df):
+        
+    #remove the color column since I don't feel like it contributes heavily to price
+    df = df.drop('color', axis=1)
+    #remove the model column since it is too distinct to generalize over 
+    df = df.drop('model', axis=1)
+    
+    df = df.drop('cpu_speed', axis=1)
+    df = df.drop('rating', axis=1)
+
+    # get all the columns that start with sf_ and remove them 
+    sf_columns = [col for col in df.columns if col.startswith('sf_')]
+    df = df.drop(sf_columns, axis=1)
+    
+    # data = data.drop('harddisk_gb', axis=1)
+    # data = data.drop('graphics_mfr', axis=1)
+    # data = data.drop('graphics_type', axis=1)
+    # data = data.drop('brand', axis=1)
+    # data = data.drop('OS', axis=1)
+    return df
+
+def train(df_train, C=1.0):
+    dv = DictVectorizer()
     df_train, y_train = prepare(df_train)
-    X_full_train = dv.fit_transform(df_train.to_dict(orient='records'))
-    features = dv.get_feature_names_out().tolist()
-    best_params = {'colsample_bytree': 0.5, 'learning_rate': 0.1, 'max_depth': 7, 'min_child_weight': 0.5, 'subsample': 0.8}
-    xgb_params = {
-        'eta': 0.1, 
-        'objective': 'reg:squarederror',
-        'nthread': 8,
-        'verbosity': 1,
-        **best_params
-    }
-    dfulltrain = xgb.DMatrix(X_full_train, label=y_train, feature_names=features)
-    model = xgb.train(xgb_params, dfulltrain, num_boost_round=70)
+    dicts = df_train.to_dict(orient='records')
+    X_train = dv.fit_transform(dicts)
+    
+    model = LinearRegression()
+    model.fit(X_train, y_train)
+    
     return model, dv
 
 def predict(df_test, dv, model):
-    features = dv.get_feature_names_out().tolist()
     df_test, y_test = prepare(df_test)
-    X_test = dv.transform(df_test.to_dict(orient='records'))
-    dtest = xgb.DMatrix(X_test, label=y_test, feature_names=features)
-    y_pred = model.predict(dtest)
+    dicts = df_test.to_dict(orient='records')
+    X_val = dv.transform(dicts)
+    
+    y_pred = model.predict(X_val)
+    
     return y_pred, y_test
 
-    
+# def train(df_train):
+#     dv = DictVectorizer(sparse=True)
+#     df_train, y_train = prepare(df_train)
+#     df_train = remove_columns(df_train)
+#     X_full_train = dv.fit_transform(df_train.to_dict(orient='records'))
+#     features = dv.get_feature_names_out().tolist()
+#     best_params = {'colsample_bytree': 0.5, 'learning_rate': 0.1, 'max_depth': 7, 'min_child_weight': 0.5, 'subsample': 0.8}
+#     xgb_params = {
+#         'eta': 0.1, 
+#         'objective': 'reg:squarederror',
+#         'nthread': 8,
+#         'verbosity': 1,
+#         **best_params
+#     }
+#     dfulltrain = xgb.DMatrix(X_full_train, label=y_train, feature_names=features)
+#     model = xgb.train(xgb_params, dfulltrain, num_boost_round=70)
+#     return model, dv
+
+# def predict(df_test, dv, model):
+#     features = dv.get_feature_names_out().tolist()
+#     df_test, y_test = prepare(df_test)
+#     X_test = dv.transform(df_test.to_dict(orient='records'))
+#     dtest = xgb.DMatrix(X_test, label=y_test, feature_names=features)
+#     y_pred = model.predict(dtest)
+#     return y_pred, y_test
+
+
 def validate(df_full_train):
     # validation
     print('-------------------')

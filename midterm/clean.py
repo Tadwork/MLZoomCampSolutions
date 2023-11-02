@@ -1,3 +1,5 @@
+from collections import Counter
+
 import numpy as np
 import pandas as pd
 
@@ -14,43 +16,44 @@ def clean_screen_size(data):
     return data
 
 def clean_special_features(data):
-    # replacements = {
-    #     'anti-glare screen': 'anti glare',
-    #     'anti glare coating': 'anti glare',
-    #     'anti-glare': 'anti glare',
-    #     'wifi & bluetooth': 'bluetooth',
-    #     'backlit kb': 'backlit keyboard',
-    #     'fingerprint': 'fingerprint reader',
-    #     'high definition audio': 'hd audio',
-    #     'nanoedge bezel': 'thin bezel',
-    #     'support stylus': 'pen',
-    #     'stylus': 'pen',
-    # }
+    replacements = {
+        'anti-glare screen': 'anti glare',
+        'anti glare coating': 'anti glare',
+        'anti-glare': 'anti glare',
+        'wifi & bluetooth': 'bluetooth',
+        'backlit kb': 'backlit keyboard',
+        'fingerprint': 'fingerprint reader',
+        'high definition audio': 'hd audio',
+        'nanoedge bezel': 'thin bezel',
+        'support stylus': 'pen',
+        'stylus': 'pen',
+    }
 
-    # #for each value in special_features column, split it by comma and add it to the counter
-    # special_features = Counter()
-    # for row in data['special_features']:
-    #     if isinstance(row, str):
-    #         values = row.lower().split(',')
-    #         #strip any leading or trailing spaces from each value
-    #         values = [value.strip() for value in values]
-    #         # for each replacement, replace the value with the key
-    #         values = [replacements.get(value, value) for value in values]
-    #         special_features.update(values)
+    #for each value in special_features column, split it by comma and add it to the counter
+    special_features = Counter()
+    for row in data['special_features']:
+        if isinstance(row, str):
+            values = row.lower().split(',')
+            #strip any leading or trailing spaces from each value
+            values = [value.strip() for value in values]
+            # for each replacement, replace the value with the key
+            values = [replacements.get(value, value) for value in values]
+            special_features.update(values)
 
-    # # remove 'information not available' from the special_features counter
-    # special_features.pop('information not available', None)
-    # # select all the special_features that have a count greater than 15
-    # special_features = {key: value for key, value in special_features.items() if value > 15}
+    # remove 'information not available' from the special_features counter
+    special_features.pop('information not available', None)
+    # select all the special_features that have a count greater than 15
+    special_features = {key: value for key, value in special_features.items() if value > 15}
 
-    # top_feature_names = special_features.keys()
-    # special_feature_column_names = [name.replace(' ', '_') for name in top_feature_names]
-    # # for each special_feature, create a new column in the dataframe if the special_feature is present in the special_features column
-    # for feature in special_feature_column_names:
-    #     data[feature] = data['special_features'].str.contains(feature, case=False)
-    #     data[feature] = data[feature].fillna(False)
-    # for feature in special_feature_column_names:
-    #     data[feature] = data[feature].astype(str)
+    top_feature_names = special_features.keys()
+    special_feature_column_names = ['sf_' + name.replace(' ', '_') for name in top_feature_names]
+    # for each special_feature, create a new column in the dataframe if the special_feature is present in the special_features column
+    for feature in special_feature_column_names:
+        data[feature] = data['special_features'].str.contains(feature, case=False)
+        data[feature] = data[feature].fillna(False)
+        
+    for feature in special_feature_column_names:
+        data[feature] = data[feature].astype(str)
 
     # drop the special_features column
     data = data.drop('special_features', axis=1)
@@ -99,8 +102,7 @@ def clean_graphics(data):
 
     data = data.drop('graphics', axis=1)
     data = data.drop('graphics_coprocessor', axis=1)
-    # data = data.drop('graphics_mfr', axis=1)
-    # data = data.drop('graphics_type', axis=1)
+ 
     return data
 
 def clean_brand(data):
@@ -119,7 +121,6 @@ def clean_brand(data):
     data.loc[data['brand'].isin(brands), 'brand'] = 'unknown'
 
     data.loc[data['brand'] == 'unknown', 'brand'] = np.nan
-    # data = data.drop('brand', axis=1)
     return data
 
 def clean_os(data):
@@ -134,7 +135,6 @@ def clean_os(data):
     # set OS to other if it contains anything other than Windows or Chrome, Mac, or Linux
     data.loc[~data['OS'].str.lower().str.contains('windows|chrome|mac|linux'), 'OS'] = 'Other'
     data.loc[data['OS'].str.lower().str.contains('mac'), 'OS'] = 'Mac OS'
-    # data = data.drop('OS', axis=1)
     return data
 
 def clean_harddisk(data):
@@ -147,7 +147,6 @@ def clean_harddisk(data):
     # set the harddisk_gb column to nan if the harddisk column contains unknown
     data.loc[data['harddisk'].str.contains('unknown'), 'harddisk_gb'] = np.nan
     data = data.drop('harddisk', axis=1)
-    # data = data.drop('harddisk_gb', axis=1)
     return data
     
 def clean_cpu(data):
@@ -172,21 +171,19 @@ def clean_cpu(data):
             data.loc[data['cpu'].str.contains(model), 'cpu'] = model
     data.loc[data['cpu'].str.contains('unknown|others'), 'cpu'] = np.nan
 
-    # data['cpu_speed'] = data['cpu_speed'].str.replace('GHz', '')
-    # data['cpu_speed'] = data['cpu_speed'].str.replace('Hz', '')
-    # data['cpu_speed'] = data['cpu_speed'].str.replace('MHz', '')
-    # data['cpu_speed'] = pd.to_numeric(data['cpu_speed'], errors='coerce')
-    # # assume that any speeds above 100 are in MHz and divide by 1000 
-    # data.loc[data['cpu_speed'] > 1000, 'cpu_speed'] = data.loc[data['cpu_speed'] > 1000, 'cpu_speed'] / 1000
-    data = data.drop('cpu_speed', axis=1)
+    data['cpu_speed'] = data['cpu_speed'].str.replace('GHz', '')
+    data['cpu_speed'] = data['cpu_speed'].str.replace('Hz', '')
+    data['cpu_speed'] = data['cpu_speed'].str.replace('MHz', '')
+    data['cpu_speed'] = pd.to_numeric(data['cpu_speed'], errors='coerce')
+    # assume that any speeds above 100 are in MHz and divide by 1000 
+    data.loc[data['cpu_speed'] > 1000, 'cpu_speed'] = data.loc[data['cpu_speed'] > 1000, 'cpu_speed'] / 1000
 
     return data
 
 def clean_rating(data):
     # round ratings and convert them to a categorical value (string)
-    # data['rating'] = data['rating'].round().astype(str)
-    # data.loc[data['rating'].str.contains('nan'), 'rating'] = np.nan
-    data = data.drop('rating', axis=1)
+    data['rating'] = data['rating'].round().astype(str)
+    data.loc[data['rating'].str.contains('nan'), 'rating'] = np.nan
     return data
 
 def clean_data(data):
@@ -200,10 +197,4 @@ def clean_data(data):
     data = clean_rating(data)
     data = clean_screen_size(data)
     data = clean_special_features(data)
-    #remove the color column since I don't feel like it contributes heavily to price
-    data = data.drop('color', axis=1)
-    #remove the model column since it is too distinct to generalize over 
-    data = data.drop('model', axis=1)
-    #remove duplicate rows
-    # data = data.drop_duplicates()
     return data

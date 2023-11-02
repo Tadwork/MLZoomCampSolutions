@@ -77,7 +77,7 @@
             text-align: left;
         }
 
-        td.active {
+        tr.active {
             background-color: #4CAF50;
             color: white;
         }
@@ -192,21 +192,41 @@
                 <input v-model="laptop.ram_gb" type="text" placeholder="RAM (GB)">
                 <button type="submit">Predict</button>
             </form>
-            <div v-if="price > 0" v-model="price" class="prediction-result">Prediction result ${{price}} +/- 421.511
+            <div v-if="price > 0" v-model="price" class="prediction-result">Prediction result ${{price}} +/- 402.283
             </div>
             <table class="compare-results-table" v-if="predictions.length">
                 <thead>
                     <tr>
-                        <th v-for="(value, key) in predictions[0]" :key="key">
+                        <!-- <th v-for="(value, key) in predictions[0]" :key="key">
                             {{ key }}
-                        </th>
+                        </th> -->
+                        <th>Brand</th>
+                        <th>Model</th>
+                        <th>Screen Size</th>
+                        <th>CPU</th>
+                        <th>OS</th>
+                        <th>CPU Manufacturer</th>
+                        <th>Graphics Type</th>
+                        <th>Graphics Manufacturer</th>
+                        <th>Hard Disk (GB)</th>
+                        <th>RAM (GB)</th>
+                        <th>Price</th>
                     </tr>
                 </thead>
                 <tbody>
-                    <tr v-for="(prediction, index) in predictions" :key="index">
-                        <td v-for="(value, key) in prediction" :key="key" :class="{ active: prediction['diff'] === 0 }">
-                            {{ value }}
-                        </td>
+                    <tr v-for="(prediction, index) in predictions" :key="index" :class="{ active: prediction['diff'] === 0 }">
+                        <td>{{ prediction['brand'] }}</td>
+                        <td>{{ prediction['model'] }}</td>
+                        <td>{{ prediction['screen_size'] }}</td>
+                        <td>{{ prediction['cpu'] }}</td>
+                        <td>{{ prediction['OS'] }}</td>
+                        <td>{{ prediction['cpu_mfr'] }}</td>
+                        <td>{{ prediction['graphics_type'] }}</td>
+                        <td>{{ prediction['graphics_mfr'] }}</td>
+                        <td>{{ prediction['harddisk_gb'] }}</td>
+                        <td>{{ prediction['ram_gb'] }}</td>
+                        <td>{{ prediction['price'] }}</td>
+                        <!-- <td>{{ prediction['diff'] }}</td> -->
                     </tr>
                 </tbody>
             </table>
@@ -288,6 +308,7 @@
                         for (const key in data.results) {
                             this.parameter_options[key] = data.results[key];
                         }
+                        this.parameter_options.screen_size.sort((a, b) => a - b);
                     })
                     .catch(error => {
                         console.error('Error:', error);
