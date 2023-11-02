@@ -32,7 +32,7 @@ There were also a significant amount of inconsistency in many of the columns and
 
 ## Final Model
 
-The final model uses XGBoost and has an RMSE of 421.511 on the test data set and an R2 score of 0.76
+The final model uses Linear Regression and has an RMSE of 402 on the test data set and an R2 score of 0.78
 Validation numbers do vary but the model is pretty stable with the r2 score +- 0.032 on multiple folds (run train.py to see your own results)
 
 ## Test
@@ -44,17 +44,17 @@ Validation numbers do vary but the model is pretty stable with the r2 score +- 0
  curl http://0.0.0.0:9696/predict --data '{"brand":"dell","screen_size":"14 ","cpu":"i7","OS":"Windows 11 Home","cpu_mfr":"intel","graphics_type":"discrete","graphics_mfr":"nvidia","harddisk_gb":1000,"ram_gb":8}'
 ```
 
-deployed to Render at https://midterm-laptop-price-prediction.onrender.com/
+Deployed to AWS at https://laptop-price-prediction.tzvi.dev/
+
+```
+ curl https://ymnk9nn4ix.us-east-1.awsapprunner.com/predict --data '{"brand":"dell","screen_size":"14 ","cpu":"i7","OS":"Windows 11 Home","cpu_mfr":"intel","graphics_type":"discrete","graphics_mfr":"nvidia","harddisk_gb":1000,"ram_gb":8}'
+```
+or Render at https://midterm-laptop-price-prediction.onrender.com/
 
 ```
  curl https://midterm-laptop-price-prediction.onrender.com/predict --data '{"brand":"dell","screen_size":"14 ","cpu":"i7","OS":"Windows 11 Home","cpu_mfr":"intel","graphics_type":"discrete","graphics_mfr":"nvidia","harddisk_gb":1000,"ram_gb":8}'
 ```
 
-or AWS at https://ymnk9nn4ix.us-east-1.awsapprunner.com/
-
-```
- curl https://ymnk9nn4ix.us-east-1.awsapprunner.com/predict --data '{"brand":"dell","screen_size":"14 ","cpu":"i7","OS":"Windows 11 Home","cpu_mfr":"intel","graphics_type":"discrete","graphics_mfr":"nvidia","harddisk_gb":1000,"ram_gb":8}'
-```
 
 ## Cloud deployment
 
