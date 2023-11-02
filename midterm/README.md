@@ -47,12 +47,7 @@ Validation numbers do vary but the model is pretty stable with the r2 score +- 0
 Deployed to AWS at https://laptop-price-prediction.tzvi.dev/
 
 ```
- curl https://ymnk9nn4ix.us-east-1.awsapprunner.com/predict --data '{"brand":"dell","screen_size":"14 ","cpu":"i7","OS":"Windows 11 Home","cpu_mfr":"intel","graphics_type":"discrete","graphics_mfr":"nvidia","harddisk_gb":1000,"ram_gb":8}'
-```
-or Render at https://midterm-laptop-price-prediction.onrender.com/
-
-```
- curl https://midterm-laptop-price-prediction.onrender.com/predict --data '{"brand":"dell","screen_size":"14 ","cpu":"i7","OS":"Windows 11 Home","cpu_mfr":"intel","graphics_type":"discrete","graphics_mfr":"nvidia","harddisk_gb":1000,"ram_gb":8}'
+ curl https://laptop-price-prediction.tzvi.dev/predict --data '{"brand":"dell","screen_size":"14 ","cpu":"i7","OS":"Windows 11 Home","cpu_mfr":"intel","graphics_type":"discrete","graphics_mfr":"nvidia","harddisk_gb":1000,"ram_gb":8}'
 ```
 
 
@@ -64,7 +59,3 @@ or Render at https://midterm-laptop-price-prediction.onrender.com/
 - If making changes `copilot deploy`
 - When done `copilot app delete`
 - refer to the [AWS Copilot Documentation](https://aws.github.io/copilot-cli/)
-
-## Render
-- follow instructions to connect to the github repo and deploy 
-- or install the render cli and `render config init` and then deploy
