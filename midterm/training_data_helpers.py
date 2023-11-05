@@ -21,13 +21,13 @@ def find_index_of_closest_price(records, price):
     start = 0
     
     end = len(records) - 1
-    while start < end:
+    while start + 1 < end:
         mid = start + (end - start) // 2
         mid_price = records[mid]["price"]
         if mid_price < price:
             start = mid
         else:
             end = mid
-    if abs(price - records[start]["price"]) <= abs(records[end]["price"] - price):
+    if price < records[start]["price"]:
         return start
     return end

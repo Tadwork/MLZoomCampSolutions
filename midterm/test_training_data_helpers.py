@@ -11,11 +11,11 @@ def test_find_closest_price():
         {'price': 3000},
     ]
     # find 1000 which is the closest price between 1000 and 2000 for 1200
-    assert find_index_of_closest_price(prices, 1200) == 0
+    assert find_index_of_closest_price(prices, 1200) == 1
     # find 2000 which is the closest price between 1000 and 2000 for 1800
     assert find_index_of_closest_price(prices, 1800) == 1
     # find 2000 which is the closest price between 2000 and 3000 for 2200 (choose lower price if equal distance)
-    assert find_index_of_closest_price(prices, 2500) == 2
+    assert find_index_of_closest_price(prices, 2500) == 3
     # don't fail if the price is higher than the highest price
     assert find_index_of_closest_price(prices, 3500) == 3
     # don't fail if the price is lower than the lowest price

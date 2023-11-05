@@ -52,4 +52,4 @@ variables:                    # Pass environment variables as key value pairs.
 environments:
   prod:
     variables:
-      LOG_LEVEL: error        # Log level for the "test" environment.
+      LOG_LEVEL: ERROR        # Log level for the "test" environment.
