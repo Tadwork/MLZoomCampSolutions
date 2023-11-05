@@ -198,3 +198,10 @@ def clean_data(data):
     data = clean_screen_size(data)
     data = clean_special_features(data)
     return data
+
+if __name__ == '__main__':
+    data = pd.read_csv('data/amazon_laptop_prices_v01.csv')
+    data = clean_data(data)
+    # sort by price
+    data = data.sort_values(by=['price'])
+    data.to_csv('data/amazon_laptop_prices_v01_cleaned.csv', index=False)

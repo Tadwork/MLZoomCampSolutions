@@ -23,9 +23,9 @@ image:
 #     timeout: 5s
 
 # Number of CPU units for the task.
-cpu: 512
+cpu: 256
 # Amount of memory in MiB used by the task.
-memory: 1024
+memory: 512
 
 # Connect your App Runner service to your environment's VPC.
 # network:
@@ -39,8 +39,8 @@ memory: 1024
 
 # Optional fields for more advanced use-cases.
 #
-# variables:                    # Pass environment variables as key value pairs.
-#   LOG_LEVEL: info
+variables:                    # Pass environment variables as key value pairs.
+  LOG_LEVEL: debug
 #
 # tags:                         # Pass tags as key value pairs.
 #   project: project-name
@@ -49,7 +49,7 @@ memory: 1024
 #   GITHUB_TOKEN: GITHUB_TOKEN  # The key is the name of the environment variable, the value is the name of an SSM parameter.
 
 # You can override any of the values defined above by environment.
-# environments:
-#   test:
-#     variables:
-#       LOG_LEVEL: debug        # Log level for the "test" environment.
+environments:
+  prod:
+    variables:
+      LOG_LEVEL: error        # Log level for the "test" environment.

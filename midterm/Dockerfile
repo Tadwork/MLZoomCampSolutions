@@ -1,7 +1,7 @@
 FROM python:3.11
 ENV MODEL_PATH=/app/model.bin
 ENV DV_PATH=/app/dv.bin
-ENV TRAINING_DATA_PATH=/app/amazon_laptop_prices_v01.csv
+ENV TRAINING_DATA_PATH=/app/amazon_laptop_prices_v01_cleaned.csv
 WORKDIR /app
 
 RUN pip install poetry
