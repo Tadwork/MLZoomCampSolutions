@@ -59,3 +59,16 @@ Deployed to AWS at https://laptop-price-prediction.tzvi.dev/
 - If making changes `copilot deploy`
 - When done `copilot app delete`
 - refer to the [AWS Copilot Documentation](https://aws.github.io/copilot-cli/)
+
+### AWS Lambda
+- connect to the registry `aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin 962972531461.dkr.ecr.us-east-1.amazonaws.com`
+- Build the docker image for lambda `docker build . -f Dockerfile-lambda -t  midterm/laptop-price-prediction-lambda --platform linux/arm64`
+- `docker tag midterm/laptop-price-prediction-lambda:latest 962972531461.dkr.ecr.us-east-1.amazonaws.com/midterm/laptop-price-prediction-lambda:latest`
+- `docker push 962972531461.dkr.ecr.us-east-1.amazonaws.com/midterm/laptop-price-prediction-lambda:latest`
+- create a Lambda using the option to provide a docker image and platform `arm64`
+- create a function url for the lambda under the configuration tab
+- create a Certificate in ACM https://us-east-1.console.aws.amazon.com/acm/home?region=us-east-1#/certificates/list
+- validate the certificate by creating a CNAME record in Cloudflare (or other DNS provider)
+- Create a cloudfront distribution and point the origin to the Lambda Function URL following steps and make sure that it allows GET, and POST in https://github.com/simonw/public-notes/issues/ using the certificate from the previous steps
+- provide the alternate cname in the cloudfront distribution config (ie laptop-price-prediction.tzvi.dev)
+- redirect Cloudflare (or other DNS provider) to the cloudfront distribution domain name XXXX.cloudfront.net
