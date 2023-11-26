@@ -1,0 +1,20 @@
+[tool.poetry]
+name = "week9"
+version = "0.1.0"
+description = ""
+authors = ["Tzvi Friedman <tadwork@gmail.com>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = ">=3.9,<3.12"
+tensorflow-macos = { version = "^2.15.0", markers = "platform_system=='Darwin' and platform_machine=='arm64'" }
+tensorflow = "^2.15.0"
+ipykernel = "^6.27.0"
+pip = "^23.3.1"
+pillow = "^10.1.0"
+requests = "^2.31.0"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
