@@ -41,7 +41,7 @@ class LambdaWithCloudFrontStack(Stack):
                     origin_path="/",  # You can adjust this as needed
                     
                 ),
-                viewer_protocol_policy=cloudfront.ViewerProtocolPolicy.REDIRECT_TO_HTTPS,
+                viewer_protocol_policy=cloudfront.ViewerProtocolPolicy.ALLOW_ALL,
                 allowed_methods=cloudfront.AllowedMethods.ALLOW_ALL,
             ),
             certificate=certificate,
