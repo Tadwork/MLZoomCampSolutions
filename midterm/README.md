@@ -60,15 +60,13 @@ Deployed to AWS at https://laptop-price-prediction.tzvi.dev/
 - When done `copilot app delete`
 - refer to the [AWS Copilot Documentation](https://aws.github.io/copilot-cli/)
 
-### AWS Lambda
-- connect to the registry `aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin 962972531461.dkr.ecr.us-east-1.amazonaws.com`
-- Build the docker image for lambda `docker build . -f Dockerfile-lambda -t  midterm/laptop-price-prediction-lambda --platform linux/arm64`
-- `docker tag midterm/laptop-price-prediction-lambda:latest 962972531461.dkr.ecr.us-east-1.amazonaws.com/midterm/laptop-price-prediction-lambda:latest`
-- `docker push 962972531461.dkr.ecr.us-east-1.amazonaws.com/midterm/laptop-price-prediction-lambda:latest`
-- create a Lambda using the option to provide a docker image and platform `arm64`
-- create a function url for the lambda under the configuration tab
-- create a Certificate in ACM https://us-east-1.console.aws.amazon.com/acm/home?region=us-east-1#/certificates/list
-- validate the certificate by creating a CNAME record in Cloudflare (or other DNS provider)
-- Create a cloudfront distribution and point the origin to the Lambda Function URL following steps and make sure that it allows GET, and POST in https://github.com/simonw/public-notes/issues/ using the certificate from the previous steps
-- provide the alternate cname in the cloudfront distribution config (ie laptop-price-prediction.tzvi.dev)
-- redirect Cloudflare (or other DNS provider) to the cloudfront distribution domain name XXXX.cloudfront.net
+### AWS Lambda using CDK
+
+- install the aws CDK https://docs.aws.amazon.com/cdk/v2/guide/work-with.html#work-with-prerequisites
+- in this directory and run `cdk bootstrap`
+- run `cdk deploy` to deploy the LaptopPredictionStack
+- somewhere in the middle of running it will send an email to the domain owner (tzvi.dev) asking permission to create a certificate for the subdomain which the owner must click "accept" on for the run to continue
+- the stack will build the docker image, create a lambda, create an ssl certificate, and create a cloudfront deployment pointing to the lambda function url
+- redirect Cloudflare (or other DNS provider) to the cloudfront distribution domain name XXXX.cloudfront.net using a CNAME record
+- run `cdk destroy` to destroy the stack
+
