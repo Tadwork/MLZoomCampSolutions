@@ -6,6 +6,8 @@ import json
 
 import numpy as np
 import pandas as pd
+import tensorflow as tf
+from tensorflow import keras
 import pickle
 
 from sklearn.linear_model import LinearRegression
@@ -57,7 +59,15 @@ def validate(df_full_train):
     print('validation results:')
     print('%.3f +- %.3f' % ( np.mean(scores), np.std(scores)))
     print('-------------------')
-    
+
+def convert_to_lite(model):
+    converter = tf.lite.TFLiteConverter.from_keras_model(model)
+
+    tflite_model = converter.convert()
+
+    with open('face-age-predict.tflite', 'wb') as f_out:
+        f_out.write(tflite_model)
+        
 if __name__ == '__main__':
     data = pd.read_csv('./data/amazon_laptop_prices_v01.csv')
     data = clean.clean_data(data)

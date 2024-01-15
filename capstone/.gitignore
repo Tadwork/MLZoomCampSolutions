@@ -1,2 +1,3 @@
 /face-age-detection/*
 !/face-age-detection/README.md
+/model-checkpoints
