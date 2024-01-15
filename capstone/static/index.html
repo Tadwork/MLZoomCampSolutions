@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Primary Meta Tags -->
+    <title>Laptop Price Prediction</title>
+    <meta name="title" content="Laptop Price Prediction" />
+    <meta name="description"
+        content="This is a small Machine Learning project that can be used to estimate the price of a laptop given a set of specs like cpu, brand, etc." />
+
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://face-age-detection.tzvi.dev/" />
+    <meta property="og:title" content="Laptop Price Prediction" />
+    <meta property="og:description"
+        content="This is a small Machine Learning project that can be used to estimate the price of a laptop given a set of specs like cpu, brand, etc." />
+    <meta property="og:image" content="https://face-age-detection.tzvi.dev/static/laptop-specs.png" />
+
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image" />
+    <meta property="twitter:url" content="https://face-age-detection.tzvi.dev/" />
+    <meta property="twitter:title" content="Laptop Price Prediction" />
+    <meta property="twitter:description"
+        content="This is a small Machine Learning project that can be used to estimate the price of a laptop given a set of specs like cpu, brand, etc." />
+    <meta property="twitter:image"
+        content="https://face-age-detection.tzvi.dev/static/laptop-specs.png" />
+
+    <!-- Meta Tags Generated with https://metatags.io -->
+    <script src="https://cdn.jsdelivr.net/npm/vue@2.6.14/dist/vue.min.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin:0;
+        }
+
+        .container {
+            width: 80%;
+            margin: auto;
+            max-width: 1200px;
+        }
+        header {
+            margin-bottom: 20px;
+        }
+
+        header,
+        footer {
+            background-color: #f1f1f1;
+            padding: 10px 0;
+            text-align: left;
+        }
+
+        footer {
+            margin-top: 20px;
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+        }
+
+        input[type="text"] {
+            margin: 5px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        .compare-results-table{
+            margin-bottom: 50px;
+        }
+
+        th,
+        td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+
+        tr.active {
+            background-color: #4CAF50;
+            color: white;
+        }
+
+        th {
+            background-color: #f2f2f2;
+        }
+
+        .prediction-result {
+            margin: 10px 0;
+        }
+
+        .align-right {
+            float: right;
+        }
+    </style>
+</head>
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-1QP5P6M2N0"></script>
+<script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag() { dataLayer.push(arguments); }
+    gtag('js', new Date());
+
+    gtag('config', 'G-1QP5P6M2N0');
+</script>
+
+<body>
+    <div id="app">
+        <header>
+            <div class="container">
+                Laptop Price Predictor
+            </div>
+            <a href="https://github.com/Tadwork/MLZoomCampSolutions/tree/main/capstone" class="github-corner" aria-label="View source on GitHub"><svg width="80"
+                    height="80" viewBox="0 0 250 250"
+                    style="fill:#151513; color:#fff; position: absolute; top: 0; border: 0; right: 0;"
+                    aria-hidden="true">
+                    <path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path>
+                    <path
+                        d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2"
+                        fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path>
+                    <path
+                        d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z"
+                        fill="currentColor" class="octo-body"></path>
+                </svg></a>
+            <style>
+                .github-corner:hover .octo-arm {
+                    animation: octocat-wave 560ms ease-in-out
+                }
+
+                @keyframes octocat-wave {
+
+                    0%,
+                    100% {
+                        transform: rotate(0)
+                    }
+
+                    20%,
+                    60% {
+                        transform: rotate(-25deg)
+                    }
+
+                    40%,
+                    80% {
+                        transform: rotate(10deg)
+                    }
+                }
+
+                @media (max-width:500px) {
+                    .github-corner:hover .octo-arm {
+                        animation: none
+                    }
+
+                    .github-corner .octo-arm {
+                        animation: octocat-wave 560ms ease-in-out
+                    }
+                }
+            </style>
+        </header>
+
+        <div class="container">
+            <form @submit.prevent="submitForm">
+                
+                <input v-model="laptop.ram_gb" type="text" placeholder="RAM (GB)">
+                <button type="submit">Predict</button>
+            </form>
+        </div>
+
+        <footer>
+            <div class="container">
+                Built by <a href="https://www.tzvi.dev/" target="_blank">Tzvi Friedman</a> for <a
+                    href="http://mlzoomcamp.com/" target="_blank">ML ZoomCamp Capstone Project</a>
+
+                <a class="align-right"
+                    href="https://www.kaggle.com/datasets/talhabarkaatahmad/laptop-prices-dataset-october-2023/data"
+                    target="_blank">Dataset</a>
+            </div>
+        </footer>
+    </div>
+
+    <script>
+        new Vue({
+            el: '#app',
+            data: {
+                laptop: {
+                    brand: '',
+                    screen_size: '',
+                    cpu: '',
+                    OS: '',
+                    cpu_mfr: '',
+                    graphics_type: '',
+                    graphics_mfr: '',
+                    harddisk_gb: '',
+                    ram_gb: ''
+                },
+                parameter_options: {
+                    brand: [],
+                    screen_size: [],
+                    cpu: [],
+                    OS: [],
+                    cpu_mfr: [],
+                    graphics_type: [],
+                    graphics_mfr: []
+                },
+                price: 0,
+                predictions: []
+            },
+            methods: {
+                submitForm() {
+                    let options = {
+                        brand: this.laptop.brand || null,
+                        screen_size: this.laptop.screen_size || null,
+                        cpu: this.laptop.cpu || null,
+                        OS: this.laptop.OS || null,
+                        cpu_mfr: this.laptop.cpu_mfr || null,
+                        graphics_type: this.laptop.graphics_type || null,
+                        graphics_mfr: this.laptop.graphics_mfr || null,
+                        harddisk_gb: parseFloat(this.laptop.harddisk_gb) || null,
+                        ram_gb: parseFloat(this.laptop.ram_gb) || null
+                    }
+                    fetch('/predict', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify(options)
+                    })
+                        .then(response => response.json())
+                        .then(data => {
+                            this.predictions = data.results.top10 || [];
+                            this.price = data.results.price;
+                        })
+                        .catch(error => {
+                            console.error('Error:', error);
+                        });
+                }
+            },
+            created() {
+                fetch('/parameters')
+                    .then(response => response.json())
+                    .then(data => {
+                        for (const key in data.results) {
+                            this.parameter_options[key] = data.results[key];
+                        }
+                        this.parameter_options.screen_size.sort((a, b) => a - b);
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                    });
+            }
+        });
+    </script>
+</body>
+
+</html>
