@@ -1,37 +1,33 @@
+#!/usr/bin/env python
+# coding: utf-8
+
 import pickle
 import json
 import logging
 import os
 
+
 import pandas as pd
 from flask import Flask, jsonify, request, send_file
 from apig_wsgi import make_lambda_handler
 
-MODEL_PATH = os.getenv("MODEL_PATH", "./model.bin")
-DV_PATH = os.getenv("DV_PATH", "./dv.bin")
-# TRAINING_DATA_PATH = os.getenv(
-#     "TRAINING_DATA_PATH", "./data/amazon_laptop_prices_v01_cleaned.csv"
-# )
+import tflite_runtime.interpreter as tflite
+import numpy as np
+from io import BytesIO
+from urllib import request as url_request
+
+from PIL import Image
+
 def get_globals():
     config = {}
-    # training_data = pd.read_csv(TRAINING_DATA_PATH)
-    # config["TRAINING_DATA"] = training_data
-    # training_data_records = training_data.to_dict(orient="records")
-    # # replace np.nan with None
-    # for item in training_data_records:
-    #     for key in item:
-    #         if pd.isnull(item[key]):
-    #             item[key] = None
-    # config["TRAINING_DATA_RECORDS"] = training_data_records
-    
     #load the model and dict vectorizer
-    with open(DV_PATH, "rb") as dv_raw:
-        dv = pickle.load(dv_raw)
-    config["DV"] = dv
+    # with open(DV_PATH, "rb") as dv_raw:
+    #     dv = pickle.load(dv_raw)
+    # config["DV"] = dv
 
-    with open(MODEL_PATH, "rb") as model_raw:
-        model = pickle.load(model_raw)
-    config["MODEL"] = model
+    # with open(MODEL_PATH, "rb") as model_raw:
+    #     model = pickle.load(model_raw)
+    # config["MODEL"] = model
 
     # get all the unique categorical parameters
     # parameter_options = get_categorical_parameters(training_data)
@@ -43,51 +39,62 @@ model_globals = get_globals()
 logging.basicConfig(level=os.getenv('LOG_LEVEL',logging.DEBUG))
 logger = logging.getLogger(__name__)
 
+def download_image(url):
+    with url_request.urlopen(url) as resp:
+        buffer = resp.read()
+    stream = BytesIO(buffer)
+    img = Image.open(stream)
+    return img
+
+
+def prepare_image(img, target_size):
+    if img.mode != 'RGB':
+        img = img.convert('RGB')
+    img = img.resize(target_size, Image.NEAREST)
+    return img
+
+def preprocess_image(img, target_size):
+    img = prepare_image(img, target_size)
+    img = np.array(img)
+    img = img.astype('float32')
+    # img /= 255.0
+    img = np.expand_dims(img, axis=0)
+    return img
+
+interpreter = tflite.Interpreter(model_path='model.tflite')
+interpreter.allocate_tensors()
+
+input_index = interpreter.get_input_details()[0]['index']
+output_index = interpreter.get_output_details()[0]['index']
+
+# def lambda_handler(event, context):
+#     url = event['url']
+#     result = predict(url)
+#     return result
+
+# MODEL_PATH = os.getenv("MODEL_PATH", "./model.bin")
+
+
 app = Flask(__name__)
 
-@app.route("/")
-def index():
-    return send_file("./static/index.html")
-
-
-# @app.route("/parameters")
-# def parameters():
-#     return jsonify(results=model_globals["PARAMETER_OPTIONS"])
-
+# @app.route("/")
+# def index():
+#     return send_file("./static/index.html")
 
 @app.route("/predict", methods=["POST"])
 def predict():
-    # print("predicting")
-    model = model_globals["MODEL"]
-    dv = model_globals["DV"]
-    # training_data_records = model_globals["TRAINING_DATA_RECORDS"]
-    # get the data
-    data = request.get_json(force=True)
-    # val = [
-    #     {
-    #         "brand": data.get("brand") or "unknown",
-    #         "screen_size": data.get("screen_size") or "unknown",
-    #         "cpu": data.get("cpu") or "unknown",
-    #         "OS": data.get("OS") or "unknown",
-    #         "cpu_mfr": data.get("cpu_mfr") or "unknown",
-    #         "graphics_type": data.get("graphics_type") or "unknown",
-    #         "graphics_mfr": data.get("graphics_mfr") or "unknown",
-    #         "harddisk_gb": data.get("harddisk_gb") or 0,
-    #         "ram_gb": data.get("ram_gb") or 0,
-    #     }
-    # ]
-    X_val = dv.transform(val)
-    prediction = model.predict(X_val)
-    price = round(float(prediction[0]), 2)
-    print(f"predicted price: {price}")
-    # closest_idx = find_index_of_closest_price(training_data_records, price)
-    # logger.debug('closest record = %s at idx %s',json.dumps(training_data_records[closest_idx]),closest_idx)
-    # five_lower = training_data_records[max(closest_idx - 5,0) : closest_idx]
-    # five_higher = training_data_records[closest_idx: min(closest_idx + 5, len(training_data_records))]
-    
-    # top10 = five_lower + [{**data, 'diff':0, 'price': price}] + five_higher
+    data = request.data.decode("utf-8")
+    img = download_image(data.url)
+    X = preprocess_image(img, target_size=(150, 150))
 
-    # output = {"price": price, "top10": top10}
+    interpreter.set_tensor(input_index, X)
+    interpreter.invoke()
+    preds = interpreter.get_tensor(output_index)
+
+    float_predictions = preds[0].tolist()
+
+    # return float_predictions
+    output = {"young": float_predictions[0][0], "middle": float_predictions[0][1], "old": float_predictions[0][2]}
     return jsonify(results=output)
 
 lambda_handler = make_lambda_handler(app)

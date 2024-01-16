@@ -6,8 +6,9 @@ data  = {
   "rawPath": "/parameters",
   "requestContext": {
     "http": {
-      "method": "GET",
-      "path": "/parameters",
+      "method": "POST",
+      "path": "/predict",
+      "body": "{\"url\":\"https://www.tzvi.dev/images/headshot_steve_friedman_circle_clear.png\"}",
       "protocol": "HTTP/1.1",
     },
   },

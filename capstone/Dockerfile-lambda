@@ -1,8 +1,6 @@
 FROM public.ecr.aws/lambda/python:3.11-arm64
 
-ENV MODEL_PATH=/${LAMBDA_TASK_ROOT}/model.bin
-ENV DV_PATH=/${LAMBDA_TASK_ROOT}/dv.bin
-# ENV TRAINING_DATA_PATH=/${LAMBDA_TASK_ROOT}/amazon_laptop_prices_v01_cleaned.csv
+ENV MODEL_PATH=/${LAMBDA_TASK_ROOT}/model.tflite
 
 RUN pip install poetry
 
@@ -11,7 +9,7 @@ COPY poetry.lock pyproject.toml ${LAMBDA_TASK_ROOT}
 RUN poetry config virtualenvs.create false
 RUN poetry install --without dev
 
-COPY training_data_helpers.py predict.py dv.bin model.bin clean.py data ${LAMBDA_TASK_ROOT}
-COPY /static ${LAMBDA_TASK_ROOT}/static
+COPY predict.py model.tflite ${LAMBDA_TASK_ROOT}
+# COPY /static ${LAMBDA_TASK÷_ROOT}/static
 
 CMD [ "predict.lambda_handler" ]

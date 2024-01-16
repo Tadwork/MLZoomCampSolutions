@@ -15,16 +15,29 @@ https://www.kaggle.com/datasets/arashnic/faces-age-detection-dataset
 
 ## Development Setup
 
+- ensure you are in the capstone directory with `cd capstone`
 - install poetry on your system `pip install poetry`
 - `poetry shell` to create a new virtual env and activate it
 - `poetry install` will install dev dependencies
-- run `poetry export --without-hashes --format=requirements.txt > requirements.txt` to update requirements.txt dependencies if any change
+- OPTIONAL: run `poetry export --without-hashes --format=requirements.txt > requirements.txt` to update requirements.txt dependencies if any changes
 - notebook.ipynb contains prototype code used to clean , run EDA, and test various models and parameter combinations
 - run `cd capstone` to set the current directory to the midterm folder
-- run `train.py` to create or update the model and dv
-- run `predict.py` to create a local Flask server
+- run `python3 train.py` to create or update the model and dv
+- run `python3 convert.py -i [INPUT_MODEL_FILE_NAME] -o model.tflite`
+- run `python3 predict.py` to create a local Flask server
 
 ## Test
+
+- ensure you are in the capstone directory with `cd capstone`
+- `docker build . -f Dockerfile-lambda -t face-age-detection-capstone`
+- `docker run -p 9696:9696 face-age-detection-capstone`
+- from another terminal run `python3 test-lambda-locally.py`
+
+Deployed to AWS at https://laptop-price-prediction.tzvi.dev/
+
+```
+ curl https://laptop-price-prediction.tzvi.dev/predict --data '{"brand":"dell","screen_size":"14 ","cpu":"i7","OS":"Windows 11 Home","cpu_mfr":"intel","graphics_type":"discrete","graphics_mfr":"nvidia","harddisk_gb":1000,"ram_gb":8}'
+```
 
 ## Cloud deployment
 

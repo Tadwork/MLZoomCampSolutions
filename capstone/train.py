@@ -3,7 +3,6 @@ Training the final model
 Saving it to a file (e.g. pickle)
 """
 import os
-import json
 
 from sklearn.model_selection import train_test_split
 import pandas as pd
@@ -104,8 +103,7 @@ def validate(train_dir,model, df_val, batch_size=32):
         **generator_args
     )
     return model.evaluate(val_generator)
-    
-    
+
 if __name__ == '__main__':
     current_directory = os.getcwd()
     labels_df = pd.read_csv(current_directory + '/face-age-detection/train.csv')
@@ -120,5 +118,6 @@ if __name__ == '__main__':
     model = create_model(learning_rate=0.0001, size_inner=64,droprate=0.5)
     trained_model = train(train_dir, df_val, df_train, model,epochs=10)
     loss, accuracy = validate(train_dir,trained_model, df_val, batch_size=32)
+    print('accuracy on test: ', accuracy)
     model.save('model.hdf5')
     print('successfully saved model and weights')
