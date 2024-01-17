@@ -1,15 +1,19 @@
-FROM public.ecr.aws/lambda/python:3.11-arm64
+FROM public.ecr.aws/lambda/python:3.11.2024.01.05.15
 
+# RUN pip install keras-image-helper
 ENV MODEL_PATH=/${LAMBDA_TASK_ROOT}/model.tflite
+
+# install gcc 
+RUN yum install -y gcc
 
 RUN pip install poetry
 
 COPY poetry.lock pyproject.toml ${LAMBDA_TASK_ROOT}
 
 RUN poetry config virtualenvs.create false
-RUN poetry install --without dev
+RUN poetry install --without dev --with lambda
 
 COPY predict.py model.tflite ${LAMBDA_TASK_ROOT}
-# COPY /static ${LAMBDA_TASK÷_ROOT}/static
+COPY /static ${LAMBDA_TASK_ROOT}/static
 
 CMD [ "predict.lambda_handler" ]

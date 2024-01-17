@@ -4,7 +4,7 @@ import tensorflow as tf
 from tensorflow import keras
 
 arguments = argparse.ArgumentParser()
-arguments.add_argument("-i", "--input_filename", help="The filename of the model to convert")
+arguments.add_argument("-i", "--input_filename", help="The filename of the model to convert relative to local (e.g. model-checkpoints\model.hdf5)")
 arguments.add_argument("-o", "--output_filename", help="The filename of the converted model")
 
 def convert(input_filename, output_filename):

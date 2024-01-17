@@ -1,13 +1,10 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-import pickle
-import json
 import logging
 import os
+import json
 
-
-import pandas as pd
 from flask import Flask, jsonify, request, send_file
 from apig_wsgi import make_lambda_handler
 
@@ -40,6 +37,8 @@ logging.basicConfig(level=os.getenv('LOG_LEVEL',logging.DEBUG))
 logger = logging.getLogger(__name__)
 
 def download_image(url):
+    print(url)
+    logger.info(f"Downloading image from {url}")
     with url_request.urlopen(url) as resp:
         buffer = resp.read()
     stream = BytesIO(buffer)
@@ -67,37 +66,34 @@ interpreter.allocate_tensors()
 input_index = interpreter.get_input_details()[0]['index']
 output_index = interpreter.get_output_details()[0]['index']
 
-# def lambda_handler(event, context):
-#     url = event['url']
-#     result = predict(url)
-#     return result
-
-# MODEL_PATH = os.getenv("MODEL_PATH", "./model.bin")
-
-
-app = Flask(__name__)
-
-# @app.route("/")
-# def index():
-#     return send_file("./static/index.html")
-
-@app.route("/predict", methods=["POST"])
-def predict():
-    data = request.data.decode("utf-8")
-    img = download_image(data.url)
+def predict(img):
     X = preprocess_image(img, target_size=(150, 150))
 
     interpreter.set_tensor(input_index, X)
     interpreter.invoke()
     preds = interpreter.get_tensor(output_index)
-
+    
     float_predictions = preds[0].tolist()
 
     # return float_predictions
-    output = {"young": float_predictions[0][0], "middle": float_predictions[0][1], "old": float_predictions[0][2]}
+    [middle, old, young] = float_predictions
+    output = {"young": young, "middle": middle, "old": old}
+    return output
+
+app = Flask(__name__)
+
+@app.route("/")
+def index():
+    return send_file("./static/index.html")
+
+@app.route("/predict", methods=["POST"])
+def predict_endpoint():
+    data = json.loads(request.data.decode("utf-8"))
+    img = download_image(data.get("url"))
+    output = predict(img)
     return jsonify(results=output)
 
 lambda_handler = make_lambda_handler(app)
 
-if __name__ == "__main__":
-    app.run(debug=True, host="0.0.0.0", port=9696)
+# if __name__ == "__main__":
+#     app.run(debug=True, host="0.0.0.0", port=9696)

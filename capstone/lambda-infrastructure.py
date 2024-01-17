@@ -16,7 +16,7 @@ class LambdaWithCloudFrontStack(Stack):
         # Create the Lambda function
         lambda_function = _lambda.DockerImageFunction(
             self, id="FaceAgeDetectionFunction",
-            code= _lambda.DockerImageCode.from_image_asset(directory=".",file="Dockerfile-lambda", platform=ecr_assets.Platform.LINUX_ARM64),
+            code= _lambda.DockerImageCode.from_image_asset(directory=".",file="Dockerfile-lambda", platform=ecr_assets.Platform.LINUX_AMD64),
             architecture= _lambda.Architecture.ARM_64,
         )
 

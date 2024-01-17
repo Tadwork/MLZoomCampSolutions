@@ -32,6 +32,7 @@ def create_model(learning_rate, size_inner,droprate,  shape = (150,150,3)):
 
     model = keras.Model(inputs=inputs, outputs=outputs)
 
+    # set to legacy optimizer to be compatible with Mac M1
     optimizer = tf.keras.optimizers.legacy.Adam(
         learning_rate=learning_rate
     )
@@ -87,7 +88,7 @@ def train(train_dir, df_val, df_train, model,epochs=10):
     )
     return model
     
-def validate(train_dir,model, df_val, batch_size=32):
+def validate(train_dir,model, df_test, batch_size=32):
     val_datagen = ImageDataGenerator()
     target_size = (150,150)
     generator_args = dict(
@@ -99,7 +100,7 @@ def validate(train_dir,model, df_val, batch_size=32):
         target_size=target_size
     )
     val_generator = val_datagen.flow_from_dataframe(
-        df_val,
+        df_test,
         **generator_args
     )
     return model.evaluate(val_generator)
@@ -116,8 +117,7 @@ if __name__ == '__main__':
     
     train_dir = current_directory + '/face-age-detection/Train/'
     model = create_model(learning_rate=0.0001, size_inner=64,droprate=0.5)
-    trained_model = train(train_dir, df_val, df_train, model,epochs=10)
-    loss, accuracy = validate(train_dir,trained_model, df_val, batch_size=32)
+    trained_model = train(train_dir, df_val, df_train, model,epochs=45)
+    loss, accuracy = validate(train_dir,trained_model, df_test, batch_size=32)
     print('accuracy on test: ', accuracy)
-    model.save('model.hdf5')
-    print('successfully saved model and weights')
+    print('model weights saved to to the model-checkpoints directory')

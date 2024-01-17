@@ -16,21 +16,21 @@ https://www.kaggle.com/datasets/arashnic/faces-age-detection-dataset
 ## Development Setup
 
 - ensure you are in the capstone directory with `cd capstone`
+- follow instructions in capstone/face-age-detection/README.md to download and unzip the training dataset
 - install poetry on your system `pip install poetry`
 - `poetry shell` to create a new virtual env and activate it
 - `poetry install` will install dev dependencies
 - OPTIONAL: run `poetry export --without-hashes --format=requirements.txt > requirements.txt` to update requirements.txt dependencies if any changes
-- notebook.ipynb contains prototype code used to clean , run EDA, and test various models and parameter combinations
-- run `cd capstone` to set the current directory to the midterm folder
+- notebook.ipynb contains prototype code used to run EDA, and test various models and parameter combinations
+- run `cd capstone` to set the current directory to the capstone folder
 - run `python3 train.py` to create or update the model and dv
-- run `python3 convert.py -i [INPUT_MODEL_FILE_NAME] -o model.tflite`
-- run `python3 predict.py` to create a local Flask server
+- run `python3 convert.py -i [INPUT_MODEL_FILE_NAME] -o model.tflite` relative to the current directory
 
 ## Test
 
 - ensure you are in the capstone directory with `cd capstone`
-- `docker build . -f Dockerfile-lambda -t face-age-detection-capstone`
-- `docker run -p 9696:9696 face-age-detection-capstone`
+- `docker build . --platform linux/amd64 -f Dockerfile-lambda -t face-age-detection-capstone`
+- `docker run --platform linux/amd64 -p 8080:8080 face-age-detection-capstone`
 - from another terminal run `python3 test-lambda-locally.py`
 
 Deployed to AWS at https://laptop-price-prediction.tzvi.dev/

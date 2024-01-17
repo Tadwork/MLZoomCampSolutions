@@ -5,25 +5,25 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <!-- Primary Meta Tags -->
-    <title>Laptop Price Prediction</title>
-    <meta name="title" content="Laptop Price Prediction" />
+    <title>Face Age Detection</title>
+    <meta name="title" content="Face Age Detection" />
     <meta name="description"
-        content="This is a small Machine Learning project that can be used to estimate the price of a laptop given a set of specs like cpu, brand, etc." />
+        content="This is a small Machine Learning project to predict the general age of a person from an image of their face" />
 
     <!-- Open Graph / Facebook -->
     <meta property="og:type" content="website" />
     <meta property="og:url" content="https://face-age-detection.tzvi.dev/" />
-    <meta property="og:title" content="Laptop Price Prediction" />
+    <meta property="og:title" content="Face Age Detection" />
     <meta property="og:description"
-        content="This is a small Machine Learning project that can be used to estimate the price of a laptop given a set of specs like cpu, brand, etc." />
+        content="This is a small Machine Learning project to predict the general age of a person from an image of their face" />
     <meta property="og:image" content="https://face-age-detection.tzvi.dev/static/laptop-specs.png" />
 
     <!-- Twitter -->
     <meta property="twitter:card" content="summary_large_image" />
     <meta property="twitter:url" content="https://face-age-detection.tzvi.dev/" />
-    <meta property="twitter:title" content="Laptop Price Prediction" />
+    <meta property="twitter:title" content="Face Age Detection" />
     <meta property="twitter:description"
-        content="This is a small Machine Learning project that can be used to estimate the price of a laptop given a set of specs like cpu, brand, etc." />
+        content="This is a small Machine Learning project to predict the general age of a person from an image of their face" />
     <meta property="twitter:image"
         content="https://face-age-detection.tzvi.dev/static/laptop-specs.png" />
 
@@ -109,7 +109,7 @@
     <div id="app">
         <header>
             <div class="container">
-                Laptop Price Predictor
+                Face Age Detection
             </div>
             <a href="https://github.com/Tadwork/MLZoomCampSolutions/tree/main/capstone" class="github-corner" aria-label="View source on GitHub"><svg width="80"
                     height="80" viewBox="0 0 250 250"
@@ -161,7 +161,8 @@
         <div class="container">
             <form @submit.prevent="submitForm">
                 
-                <input v-model="laptop.ram_gb" type="text" placeholder="RAM (GB)">
+                File picker
+                <input type="file" name="file" id="file" accept="image/*" @change="fileChanged" />
                 <button type="submit">Predict</button>
             </form>
         </div>
@@ -172,7 +173,7 @@
                     href="http://mlzoomcamp.com/" target="_blank">ML ZoomCamp Capstone Project</a>
 
                 <a class="align-right"
-                    href="https://www.kaggle.com/datasets/talhabarkaatahmad/laptop-prices-dataset-october-2023/data"
+                    href="https://www.kaggle.com/datasets/arashnic/faces-age-detection-dataset"
                     target="_blank">Dataset</a>
             </div>
         </footer>
@@ -182,71 +183,15 @@
         new Vue({
             el: '#app',
             data: {
-                laptop: {
-                    brand: '',
-                    screen_size: '',
-                    cpu: '',
-                    OS: '',
-                    cpu_mfr: '',
-                    graphics_type: '',
-                    graphics_mfr: '',
-                    harddisk_gb: '',
-                    ram_gb: ''
-                },
-                parameter_options: {
-                    brand: [],
-                    screen_size: [],
-                    cpu: [],
-                    OS: [],
-                    cpu_mfr: [],
-                    graphics_type: [],
-                    graphics_mfr: []
-                },
-                price: 0,
-                predictions: []
+                young: 0,
+                middle: 0,
+                
             },
             methods: {
-                submitForm() {
-                    let options = {
-                        brand: this.laptop.brand || null,
-                        screen_size: this.laptop.screen_size || null,
-                        cpu: this.laptop.cpu || null,
-                        OS: this.laptop.OS || null,
-                        cpu_mfr: this.laptop.cpu_mfr || null,
-                        graphics_type: this.laptop.graphics_type || null,
-                        graphics_mfr: this.laptop.graphics_mfr || null,
-                        harddisk_gb: parseFloat(this.laptop.harddisk_gb) || null,
-                        ram_gb: parseFloat(this.laptop.ram_gb) || null
-                    }
-                    fetch('/predict', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                        },
-                        body: JSON.stringify(options)
-                    })
-                        .then(response => response.json())
-                        .then(data => {
-                            this.predictions = data.results.top10 || [];
-                            this.price = data.results.price;
-                        })
-                        .catch(error => {
-                            console.error('Error:', error);
-                        });
-                }
+                
             },
             created() {
-                fetch('/parameters')
-                    .then(response => response.json())
-                    .then(data => {
-                        for (const key in data.results) {
-                            this.parameter_options[key] = data.results[key];
-                        }
-                        this.parameter_options.screen_size.sort((a, b) => a - b);
-                    })
-                    .catch(error => {
-                        console.error('Error:', error);
-                    });
+                console.log('created')
             }
         });
     </script>
