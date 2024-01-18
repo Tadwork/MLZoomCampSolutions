@@ -38,6 +38,8 @@ For simplicity, the problem has been converted to a multiclass problem with clas
 ## Test
 
 - ensure you are in the capstone directory with `cd capstone`
+- run `python3 train.py` to create or update the model
+- run `python3 convert.py -i [INPUT_MODEL_FILE_NAME] -o model.tflite` to convert the model to a tflite compatible model
 - `docker build . --platform linux/amd64 -f Dockerfile-lambda -t face-age-detection-capstone`
 - `docker run --platform linux/amd64 -p 8080:8080 face-age-detection-capstone`
 - from another terminal run `python3 test-lambda-locally.py`
