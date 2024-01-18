@@ -1,6 +1,5 @@
-FROM public.ecr.aws/lambda/python:3.11.2024.01.05.15
+FROM public.ecr.aws/lambda/python:3.11
 
-# RUN pip install keras-image-helper
 ENV MODEL_PATH=/${LAMBDA_TASK_ROOT}/model.tflite
 
 # install gcc 

@@ -3,7 +3,6 @@
 
 import logging
 import os
-import json
 
 from flask import Flask, jsonify, request, send_file
 from apig_wsgi import make_lambda_handler
@@ -17,18 +16,18 @@ from PIL import Image
 
 def get_globals():
     config = {}
-    #load the model and dict vectorizer
-    # with open(DV_PATH, "rb") as dv_raw:
-    #     dv = pickle.load(dv_raw)
-    # config["DV"] = dv
+    MODEL_PATH = os.getenv("MODEL_PATH", "model.tflite")
+    interpreter = tflite.Interpreter(model_path=MODEL_PATH)
+    interpreter.allocate_tensors()
 
-    # with open(MODEL_PATH, "rb") as model_raw:
-    #     model = pickle.load(model_raw)
-    # config["MODEL"] = model
+    input_index = interpreter.get_input_details()[0]['index']
+    output_index = interpreter.get_output_details()[0]['index']
+    config["MODEL"] = (
+        interpreter,
+        input_index,
+        output_index
+    )
 
-    # get all the unique categorical parameters
-    # parameter_options = get_categorical_parameters(training_data)
-    # config["PARAMETER_OPTIONS"] = parameter_options
     return config
 
 model_globals = get_globals()
@@ -56,19 +55,16 @@ def preprocess_image(img, target_size):
     img = prepare_image(img, target_size)
     img = np.array(img)
     img = img.astype('float32')
-    # img /= 255.0
     img = np.expand_dims(img, axis=0)
     return img
 
-interpreter = tflite.Interpreter(model_path='model.tflite')
-interpreter.allocate_tensors()
-
-input_index = interpreter.get_input_details()[0]['index']
-output_index = interpreter.get_output_details()[0]['index']
-
 def predict(img):
     X = preprocess_image(img, target_size=(150, 150))
-
+    (
+        interpreter,
+        input_index,
+        output_index
+    )  = model_globals["MODEL"]
     interpreter.set_tensor(input_index, X)
     interpreter.invoke()
     preds = interpreter.get_tensor(output_index)
@@ -78,7 +74,10 @@ def predict(img):
     # return float_predictions
     [middle, old, young] = float_predictions
     output = {"young": young, "middle": middle, "old": old}
-    return output
+    return {
+            "raw": output,
+            "prediction": max(output, key=output.get),
+        }
 
 app = Flask(__name__)
 
@@ -88,12 +87,12 @@ def index():
 
 @app.route("/predict", methods=["POST"])
 def predict_endpoint():
-    data = json.loads(request.data.decode("utf-8"))
-    img = download_image(data.get("url"))
+    # print(request.environ)
+    img = download_image(request.json.get("url"))
     output = predict(img)
     return jsonify(results=output)
 
 lambda_handler = make_lambda_handler(app)
 
-# if __name__ == "__main__":
-#     app.run(debug=True, host="0.0.0.0", port=9696)
+if __name__ == "__main__":
+    app.run(debug=True, host="0.0.0.0", port=8080)

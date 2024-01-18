@@ -4,7 +4,9 @@ data  = {
   "version": "2.0",
   "routeKey": "$default",
   "rawPath": "/predict",
-  "headers": {},
+  "headers": {
+    "content-type": "application/json",  
+  },
   "rawQueryString": "",
   "requestContext": {
     "http": {

@@ -159,9 +159,9 @@
         </header>
 
         <div class="container">
+
             <form @submit.prevent="submitForm">
-                
-                File picker
+                <img src="https://via.placeholder.com/300" alt="placeholder image" />
                 <input type="file" name="file" id="file" accept="image/*" @change="fileChanged" />
                 <button type="submit">Predict</button>
             </form>
@@ -183,12 +183,32 @@
         new Vue({
             el: '#app',
             data: {
-                young: 0,
-                middle: 0,
-                
+                prediction: {},
+                inputType: 'file', // file or url
             },
             methods: {
-                
+                fileChanged (){
+                    console.log('file changed')
+                },
+                submitForm() {
+                    let options = {
+                        url: ''
+                    }
+                    fetch('/predict', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify(options)
+                    })
+                        .then(response => response.json())
+                        .then(data => {
+                            this.predictions = data.results
+                        })
+                        .catch(error => {
+                            console.error('Error:', error);
+                        });
+                }
             },
             created() {
                 console.log('created')

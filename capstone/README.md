@@ -32,11 +32,24 @@ https://www.kaggle.com/datasets/arashnic/faces-age-detection-dataset
 - `docker build . --platform linux/amd64 -f Dockerfile-lambda -t face-age-detection-capstone`
 - `docker run --platform linux/amd64 -p 8080:8080 face-age-detection-capstone`
 - from another terminal run `python3 test-lambda-locally.py`
+- the result should be similar to:
+```json
+{
+    "results": {
+        "prediction": "young",
+        "raw": {
+            "middle": 0.2964254915714264,
+            "old": 0.026481281965970993,
+            "young": 0.6770931482315063
+        }
+    }
+}
+```
 
-Deployed to AWS at https://laptop-price-prediction.tzvi.dev/
+Deployed to AWS at https://face-age-detection.tzvi.dev/
 
 ```
- curl https://laptop-price-prediction.tzvi.dev/predict --data '{"brand":"dell","screen_size":"14 ","cpu":"i7","OS":"Windows 11 Home","cpu_mfr":"intel","graphics_type":"discrete","graphics_mfr":"nvidia","harddisk_gb":1000,"ram_gb":8}'
+ curl https://face-age-detection.tzvi.dev/predict -H "Content-Type: application/json" --data '{"url":"https://www.tzvi.dev/images/headshot_steve_friedman_circle_clear.png"}'
 ```
 
 ## Cloud deployment
@@ -45,7 +58,7 @@ Deployed to AWS at https://laptop-price-prediction.tzvi.dev/
 
 - install the aws CDK https://docs.aws.amazon.com/cdk/v2/guide/work-with.html#work-with-prerequisites
 - in this directory and run `cdk bootstrap`
-- run `cdk deploy` to deploy the LaptopPredictionStack
+- run `cdk deploy` to deploy the FaceAgeDetectionStack
 - somewhere in the middle of running it will send an email to the domain owner (tzvi.dev) asking permission to create a certificate for the subdomain which the owner must click "accept" on for the run to continue
 - the stack will build the docker image, create a lambda, create an ssl certificate, and create a cloudfront deployment pointing to the lambda function url
 - redirect Cloudflare (or other DNS provider) to the cloudfront distribution domain name XXXX.cloudfront.net using a CNAME record
