@@ -11,7 +11,9 @@
       "source.bat",
       "**/__init__.py",
       "**/__pycache__",
-      "tests"
+      "tests",
+      "model-checkpoints/**",
+      "face-age-detection/**"
     ]
   },
   "context": {

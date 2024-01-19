@@ -24,15 +24,14 @@
     <meta property="twitter:title" content="Face Age Detection" />
     <meta property="twitter:description"
         content="This is a small Machine Learning project to predict the general age of a person from an image of their face" />
-    <meta property="twitter:image"
-        content="https://face-age-detection.tzvi.dev/static/laptop-specs.png" />
+    <meta property="twitter:image" content="https://face-age-detection.tzvi.dev/static/laptop-specs.png" />
 
     <!-- Meta Tags Generated with https://metatags.io -->
     <script src="https://cdn.jsdelivr.net/npm/vue@2.6.14/dist/vue.min.js"></script>
     <style>
         body {
             font-family: Arial, sans-serif;
-            margin:0;
+            margin: 0;
         }
 
         .container {
@@ -40,6 +39,7 @@
             margin: auto;
             max-width: 1200px;
         }
+
         header {
             margin-bottom: 20px;
         }
@@ -62,12 +62,21 @@
             margin: 5px;
         }
 
-        table {
-            width: 100%;
-            border-collapse: collapse;
+        .url-input {
+            width: 300px;
         }
-        .compare-results-table{
-            margin-bottom: 50px;
+
+        .placeholder-image {
+            width: 150px;
+            height: 150px;
+            object-fit: cover;
+            margin: 10px;
+        }
+
+        .stack {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
         }
 
         th,
@@ -86,12 +95,28 @@
             background-color: #f2f2f2;
         }
 
-        .prediction-result {
-            margin: 10px 0;
-        }
-
         .align-right {
             float: right;
+        }
+
+        .tabs {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .tab {
+            padding: 10px;
+            cursor: pointer;
+        }
+
+        .tab.is-active {
+            background-color: #ccc;
+        }
+
+        .tabs-details {
+            padding: 20px;
         }
     </style>
 </head>
@@ -111,8 +136,8 @@
             <div class="container">
                 Face Age Detection
             </div>
-            <a href="https://github.com/Tadwork/MLZoomCampSolutions/tree/main/capstone" class="github-corner" aria-label="View source on GitHub"><svg width="80"
-                    height="80" viewBox="0 0 250 250"
+            <a href="https://github.com/Tadwork/MLZoomCampSolutions/tree/main/capstone" class="github-corner"
+                aria-label="View source on GitHub"><svg width="80" height="80" viewBox="0 0 250 250"
                     style="fill:#151513; color:#fff; position: absolute; top: 0; border: 0; right: 0;"
                     aria-hidden="true">
                     <path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path>
@@ -161,9 +186,23 @@
         <div class="container">
 
             <form @submit.prevent="submitForm">
-                <img src="https://via.placeholder.com/300" alt="placeholder image" />
-                <input type="file" name="file" id="file" accept="image/*" @change="fileChanged" />
-                <button type="submit">Predict</button>
+                <div class="stack">
+                    <img v-bind:src="imgUrl" alt="placeholder image" class="placeholder-image" />
+                    <!-- <tabs>
+                        <tab name="URL" :selected="true"> -->
+                            <input v-model="input.url" type="text" name="url" id="url" placeholder="Enter image URL"
+                                class="url-input" />
+                        <!-- </tab>
+                        <tab name="File">
+                            <input type="file" name="file" id="file" accept="image/*" @change="fileChanged" />
+                        </tab>
+                    </tabs> -->
+                    <button type="submit">Predict</button>
+                    <div class="prediction-result">
+                        <h2 v-if="prediction.prediction">Prediction: {{ prediction.prediction }}</h2>
+                        <h3 v-if="prediction.prediction">Confidence: {{ Math.round(prediction.raw[prediction.prediction] * 100)}}%</h3>
+                    </div>
+                </div>
             </form>
         </div>
 
@@ -172,28 +211,88 @@
                 Built by <a href="https://www.tzvi.dev/" target="_blank">Tzvi Friedman</a> for <a
                     href="http://mlzoomcamp.com/" target="_blank">ML ZoomCamp Capstone Project</a>
 
-                <a class="align-right"
-                    href="https://www.kaggle.com/datasets/arashnic/faces-age-detection-dataset"
+                <a class="align-right" href="https://www.kaggle.com/datasets/arashnic/faces-age-detection-dataset"
                     target="_blank">Dataset</a>
             </div>
         </footer>
     </div>
 
     <script>
+        
+        // https://codepen.io/tatimblin/pen/oWKdjR
+        Vue.component('tabs', {
+            template: `
+                <div>
+                    <div class="tabs">
+                        <div v-for="tab in tabs" :class="{ 'is-active': tab.isActive, 'tab':true }">
+                            <a :href="tab.href" @click="selectTab(tab)">{{ tab.name }}</a>
+                        </div>
+                    </div>
+                    <div class="tabs-details">
+                        <slot></slot>
+                    </div>
+                </div>
+            `,
+
+            data() {
+                return { tabs: [] };
+            },
+
+            created() {
+                this.tabs = this.$children;
+            },
+            methods: {
+                selectTab(selectedTab) {
+                    this.tabs.forEach(tab => {
+                        tab.isActive = (tab.name == selectedTab.name);
+                    });
+                }
+            }
+        });
+
+        Vue.component('tab', {
+            template: `
+                <div v-show="isActive"><slot></slot></div>
+            `,
+            props: {
+                name: { required: true },
+                selected: { default: false }
+            },
+            data() {
+                return {
+                    isActive: false
+                };
+            },
+            computed: {
+                href() {
+                    return '#' + this.name.toLowerCase().replace(/ /g, '-');
+                }
+            },
+            mounted() {
+                this.isActive = this.selected;
+            }
+        });
+
         new Vue({
             el: '#app',
             data: {
                 prediction: {},
                 inputType: 'file', // file or url
+                imgUrl: 'https://via.placeholder.com/150',
+                input: {
+                    file: '',
+                    url: ''
+                }
             },
             methods: {
-                fileChanged (){
+                fileChanged() {
                     console.log('file changed')
                 },
                 submitForm() {
                     let options = {
-                        url: ''
+                        url: this.input.url
                     }
+                    this.imgUrl = this.input.url
                     fetch('/predict', {
                         method: 'POST',
                         headers: {
@@ -203,7 +302,7 @@
                     })
                         .then(response => response.json())
                         .then(data => {
-                            this.predictions = data.results
+                            this.prediction = data.results
                         })
                         .catch(error => {
                             console.error('Error:', error);
