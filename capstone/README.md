@@ -22,8 +22,15 @@ Class – Age bin of person in image
 
 For simplicity, the problem has been converted to a multiclass problem with classes as Young, Middle and Old.
 
-## Development Setup
+# Final Model
 
+The best model was one that used transfer learning from the inception model using ~41 epochs of training on the dataset
+
+Average scores for 10 folds on the best model I trained, converted, and deployed:
+> Accuracy: 78.16241979598999 (+- 0.9305230530002515)
+> Loss: 0.5370393693447113
+
+## Development Setup
 
 - ensure you are in the capstone directory with `cd capstone`
 - follow instructions in capstone/face-age-detection/README.md to download and unzip the training dataset
@@ -68,8 +75,7 @@ For simplicity, the problem has been converted to a multiclass problem with clas
     }
 }
 ```
-
-Deployed to AWS at https://face-age-detection.tzvi.dev/
+- there is also a simple web ui deployed to AWS at https://face-age-detection.tzvi.dev/ and a public api endpoint at `/predict``
 
 ```shell
 curl https://face-age-detection.tzvi.dev/predict -H "Content-Type: application/json" --data '{"url":"https://www.tzvi.dev/images/headshot_steve_friedman_circle_clear.png"}'
