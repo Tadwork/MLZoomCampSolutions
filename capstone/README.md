@@ -24,12 +24,24 @@ For simplicity, the problem has been converted to a multiclass problem with clas
 
 ## Development Setup
 
+
 - ensure you are in the capstone directory with `cd capstone`
 - follow instructions in capstone/face-age-detection/README.md to download and unzip the training dataset
+
+### Macos
 - install poetry on your system `pip install poetry`
 - `poetry shell` to create a new virtual env and activate it
 - `poetry install --without lambda` will install dev dependencies
 - OPTIONAL: run `poetry export --without-hashes --format=requirements.txt > requirements.txt` to update requirements.txt dependencies if any changes
+
+### Saturn Cloud / Linux
+- create a virtual env
+- `pip install -r requirements.txt` to install
+- `pip install tensorflow[and-cuda]` to install the nvidia driver on Saturn Cloud
+
+
+## All
+
 - notebook.ipynb contains prototype code used to run EDA, and test various models and parameter combinations
 - run `cd capstone` to set the current directory to the capstone folder
 - run `python3 train.py` to create or update the model
