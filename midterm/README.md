@@ -35,6 +35,10 @@ There were also a significant amount of inconsistency in many of the columns and
 The final model uses Linear Regression and has an RMSE of 402 on the test data set and an R2 score of 0.78
 Validation numbers do vary but the model is pretty stable with the r2 score +- 0.032 on multiple folds (run train.py to see your own results)
 
+Average scores for 10 folds on the best model I trained and converted and deployed:
+> Accuracy: 76.9869589805603 (+- 1.099895515071195)
+> Loss: 0.5576785564422607
+
 ## Test
 - `cd midterm`
 - `docker build . -t midterm`
