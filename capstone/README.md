@@ -28,7 +28,7 @@ For simplicity, the problem has been converted to a multiclass problem with clas
 - follow instructions in capstone/face-age-detection/README.md to download and unzip the training dataset
 - install poetry on your system `pip install poetry`
 - `poetry shell` to create a new virtual env and activate it
-- `poetry install` will install dev dependencies
+- `poetry install --without lambda` will install dev dependencies
 - OPTIONAL: run `poetry export --without-hashes --format=requirements.txt > requirements.txt` to update requirements.txt dependencies if any changes
 - notebook.ipynb contains prototype code used to run EDA, and test various models and parameter combinations
 - run `cd capstone` to set the current directory to the capstone folder
