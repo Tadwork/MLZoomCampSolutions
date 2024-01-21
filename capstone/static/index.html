@@ -75,7 +75,7 @@
 
         .placeholder-image {
             max-width: 60rem;
-            /* max-height: 150px; */
+            max-height: 60rem;
             object-fit: cover;
             margin: 10px;
         }
@@ -194,21 +194,21 @@
                                     class="url-input" />
                                 <button @click="loadUrl">Load</button>
                             </div>
-                            <div class="input-selection-wrapper">
+                            <!-- <div class="input-selection-wrapper">
                                 <input v-model="input.selection" type="radio" id="file" name="inputType" value="file" v-model="inputType" v-on:change="inputSelectionChanged" v-bind:checked="input.selection == 'file'">
                                 <label for="file">File</label><br>
                             </div>
                             <div class="input-option-wrapper">
                                 <input type="file" name="file" id="file" accept="image/*" @change="fileChanged" />
-                            </div>
+                            </div> -->
                     </fieldset>
-                    <img v-bind:src="imgUrl" ref="image" alt="placeholder image" class="placeholder-image" />
-                    <button type="submit">Predict</button>
                     <div class="prediction-result">
                         <h2 v-if="prediction.prediction">Prediction: {{ prediction.prediction }}</h2>
                         <h3 v-if="prediction.prediction">Confidence: {{ Math.round(prediction.raw[prediction.prediction] *
                             100)}}%</h3>
                     </div>
+                    <img v-bind:src="imgUrl" ref="image" alt="placeholder image" class="placeholder-image" />
+                    <button type="submit">Predict</button>
                 </div>
         </form>
     </div>
