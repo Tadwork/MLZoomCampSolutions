@@ -9,8 +9,8 @@ from aws_cdk import aws_ecr_assets as ecr_assets
 
 domain_name = "face-age-detection.tzvi.dev"
 
-lambda_memory_size = 768
-lambda_timeout = Duration.seconds(10)
+lambda_memory_size = 1024
+lambda_timeout = Duration.seconds(20)
 
 
 class LambdaWithCloudFrontStack(Stack):
