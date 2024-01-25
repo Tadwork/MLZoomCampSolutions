@@ -29,11 +29,20 @@
     <!-- Meta Tags Generated with https://metatags.io -->
     <script src="https://cdn.jsdelivr.net/npm/vue@2.6.14/dist/vue.min.js"></script>
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.1/cropper.min.js"
+    <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.1/cropper.min.js"
         integrity="sha512-9KkIqdfN7ipEW6B6k+Aq20PV31bjODg4AA52W+tYtAE0jE0kMx49bjJ3FgvS56wzmyfMUHbQ4Km2b7l9+Y/+Eg=="
-        crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.1/cropper.min.css"
+        crossorigin="anonymous" referrerpolicy="no-referrer"></script> -->
+    <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/2.0.0-beta.4/cropper.min.js"
+        integrity="sha512-XifSdp4w5a30y42KAnCHSBmy4sk9EgtlhGGy5kyOz4VXwJOdJhvcm8xtuOgAQHTcYh4byfAEoDukSeE5PVoR4A=="
+        crossorigin="anonymous" referrerpolicy="no-referrer"></script> -->
+    <!-- <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.1/cropper.min.css"
         integrity="sha512-hvNR0F/e2J7zPPfLC9auFe3/SE0yG4aJCOd/qxew74NN7eyiSKjr7xJJMu1Jy2wf7FXITpWS1E/RY8yzuXN7VA=="
+        crossorigin="anonymous" referrerpolicy="no-referrer" /> -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.1/cropper.js"
+        integrity="sha512-Zt7blzhYHCLHjU0c+e4ldn5kGAbwLKTSOTERgqSNyTB50wWSI21z0q6bn/dEIuqf6HiFzKJ6cfj2osRhklb4Og=="
+        crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.1/cropper.css"
+        integrity="sha512-bs9fAcCAeaDfA4A+NiShWR886eClUcBtqhipoY5DM60Y1V3BbVQlabthUBal5bq8Z8nnxxiyb1wfGX2n76N1Mw=="
         crossorigin="anonymous" referrerpolicy="no-referrer" />
     <style>
         body {
@@ -74,7 +83,11 @@
         }
 
         .placeholder-image {
-            max-width: 60rem;
+            display: block;
+
+            /* This rule is very important, please don't ignore this */
+            max-width: 100%;
+            /* max-width: 60rem; */
             max-height: 50vh;
             object-fit: cover;
             margin: 10px;
@@ -108,12 +121,18 @@
 
         .input-options {
             display: grid;
-            grid-template-columns:  1fr 4fr; 
+            grid-template-columns: 1fr 4fr;
             grid-template-rows: repeat(2, 1fr);
             grid-column-gap: 5px;
             grid-row-gap: 5px;
             align-items: center;
             justify-items: start;
+        }
+
+        .preview {
+            overflow: hidden;
+            width: 50px;
+            height: 50px;
         }
     </style>
 </head>
@@ -185,43 +204,51 @@
                 <div class="stack">
                     <fieldset class="input-options">
                         <legend>Input Type</legend>
-                            <div class="input-selection-wrapper">
-                                <input v-model="input.selection" type="radio" id="url" name="inputType" value="url" v-model="inputType" v-on:change="inputSelectionChanged" v-bind:checked="input.selection == 'url'">
-                                <label for="url">URL</label><br>
-                            </div>
-                            <div class="input-option-wrapper">
-                                <input v-model="input.url" type="text" name="url" id="url" placeholder="Enter image URL"
-                                    class="url-input" />
-                                <button @click="loadUrl">Load</button>
-                            </div>
-                            <!-- <div class="input-selection-wrapper">
-                                <input v-model="input.selection" type="radio" id="file" name="inputType" value="file" v-model="inputType" v-on:change="inputSelectionChanged" v-bind:checked="input.selection == 'file'">
-                                <label for="file">File</label><br>
-                            </div>
-                            <div class="input-option-wrapper">
-                                <input type="file" name="file" id="file" accept="image/*" @change="fileChanged" />
-                            </div> -->
+                        <div class="input-selection-wrapper">
+                            <input v-model="input.selection" type="radio" id="url" name="inputType" value="url"
+                                v-model="inputType" v-on:change="inputSelectionChanged"
+                                v-bind:checked="input.selection == 'url'">
+                            <label for="url">URL</label><br>
+                        </div>
+                        <div class="input-option-wrapper">
+                            <input v-model="input.url" type="text" name="url" id="url-input" placeholder="Enter image URL"
+                                class="url-input" />
+                            <button @click="loadUrl">Load</button>
+                        </div>
+                        <div class="input-selection-wrapper">
+                            <input v-model="input.selection" type="radio" id="file" name="inputType" value="file"
+                                v-model="inputType" v-on:change="inputSelectionChanged"
+                                v-bind:checked="input.selection == 'file'">
+                            <label for="file">File</label><br>
+                        </div>
+                        <div class="input-option-wrapper">
+                            <input type="file" name="file" id="file-input" accept="image/*" @change="fileChanged()" />
+                        </div>
                     </fieldset>
                     <div class="prediction-result">
                         <h2 v-if="prediction.prediction">Prediction: {{ prediction.prediction }}</h2>
-                        <h3 v-if="prediction.prediction">Confidence: {{ Math.round(prediction.raw[prediction.prediction] *
+                        <h3 v-if="prediction.prediction">Confidence: {{ Math.round(prediction.raw[prediction.prediction]
+                            *
                             100)}}%</h3>
                     </div>
-                    <img v-bind:src="imgUrl" ref="image" alt="placeholder image" class="placeholder-image" />
+                    <div>
+                        <img v-bind:src="imgUrl" ref="image" alt="placeholder image" class="placeholder-image"
+                            v-on:load="initCropper" />
+                    </div>
                     <button type="submit">Predict</button>
                 </div>
-        </form>
-    </div>
-
-    <footer>
-        <div class="container">
-            Built by <a href="https://www.tzvi.dev/" target="_blank">Tzvi Friedman</a> for <a
-                href="http://mlzoomcamp.com/" target="_blank">ML ZoomCamp Capstone Project</a>
-
-            <a class="align-right" href="https://www.kaggle.com/datasets/arashnic/faces-age-detection-dataset"
-                target="_blank">Dataset</a>
+            </form>
         </div>
-    </footer>
+
+        <footer>
+            <div class="container">
+                Built by <a href="https://www.tzvi.dev/" target="_blank">Tzvi Friedman</a> for <a
+                    href="http://mlzoomcamp.com/" target="_blank">ML ZoomCamp Capstone Project</a>
+
+                <a class="align-right" href="https://www.kaggle.com/datasets/arashnic/faces-age-detection-dataset"
+                    target="_blank">Dataset</a>
+            </div>
+        </footer>
     </div>
 
     <script>
@@ -238,40 +265,54 @@
                 }
             },
             methods: {
+                initCropper() {
+                    console.log('initCropper')
+                },
                 fileChanged() {
-                    
-                    let file = document.querySelector('input[type=file]').files[0];
+                    const file = document.querySelector('input[type=file]').files[0];
+                    this.input.file = file
                     let reader = new FileReader();
                     reader.addEventListener("load", () => {
                         this.imgUrl = reader.result
+                        // this.cropper.unload()
+                        // this.cropper.load(this.imgUrl)
                     }, false);
                     if (file) {
                         reader.readAsDataURL(file);
                     }
-                    console.log(this.input.selection)
-                    if(!this.input.selection == 'file') this.input.selection = 'file'
+                    if (this.input.selection != 'file') this.input.selection = 'file'
+
                 },
                 loadUrl() {
                     this.imgUrl = this.input.url
+                    // this.cropper.unload()
+                    this.cropper.load(this.input.url)
                 },
                 inputSelectionChanged() {
-
-                    if(this.input.selection === 'file') {
+                    if (this.input.selection === 'file') {
                         this.fileChanged()
                     } else {
                         this.loadUrl()
                     }
+                    this.submitForm()
                 },
                 submitForm() {
-                    let options = {
-                        url: this.input.url
+                    let body, headers;
+                    if (this.input.selection === 'file') {
+                        body = new FormData();
+                        body.append('file', this.input.file);
+                    } else {
+                        body = JSON.stringify({
+                            url: this.input.url
+                        })
+                        headers = {
+                            'Content-Type': 'application/json',
+                        }
                     }
                     fetch('/predict', {
                         method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                        },
-                        body: JSON.stringify(options)
+                        headers,
+                        body,
                     })
                         .then(response => response.json())
                         .then(data => {
@@ -287,15 +328,16 @@
             },
             mounted() {
                 this.image = this.$refs.image;
-                this.cropper = new Cropper(this.image, {
-                    zoomable: false,
-                    scalable: false,
-                    aspectRatio: 1,
-                    crop: () => {
-                        const canvas = this.cropper.getCroppedCanvas();
-                        this.destination = canvas.toDataURL("image/png");
-                    }
-                });
+                // this.cropper = new Cropper(this.image, {
+                //     movable: false,
+                //     zoomable: false,
+                //     rotatable: false,
+                //     scalable: false,
+                //     crop: () => {
+                //         const canvas = this.cropper.getCroppedCanvas();
+                //         this.destination = canvas.toDataURL("image/png");
+                //     }
+                // });
             }
         });
     </script>

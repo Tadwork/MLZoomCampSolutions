@@ -7,7 +7,6 @@ import os
 from flask import Flask, jsonify, request, send_file
 from apig_wsgi import make_lambda_handler
 
-import tflite_runtime.interpreter as tflite
 import numpy as np
 from io import BytesIO
 from urllib import request as url_request
@@ -17,13 +16,23 @@ from PIL import Image
 
 def get_globals():
     config = {}
-    MODEL_PATH = os.getenv("MODEL_PATH", "model.tflite")
-    interpreter = tflite.Interpreter(model_path=MODEL_PATH)
-    interpreter.allocate_tensors()
+    
+    LAMBDA_TASK_ROOT = os.getenv("LAMBDA_TASK_ROOT")
+    if LAMBDA_TASK_ROOT is not None:
+        # We're running in Lambda
+        import tflite_runtime.interpreter as tflite
+        MODEL_PATH = os.getenv("MODEL_PATH", "model.tflite")
+        interpreter = tflite.Interpreter(model_path=MODEL_PATH)
+        interpreter.allocate_tensors()
 
-    input_index = interpreter.get_input_details()[0]["index"]
-    output_index = interpreter.get_output_details()[0]["index"]
-    config["MODEL"] = (interpreter, input_index, output_index)
+        input_index = interpreter.get_input_details()[0]["index"]
+        output_index = interpreter.get_output_details()[0]["index"]
+        config["MODEL"] = (interpreter, input_index, output_index)
+    else:
+        from tensorflow import keras
+        MODEL_PATH = os.getenv("MODEL_PATH", "capstone/model.hdf5")
+        model = keras.models.load_model(MODEL_PATH)
+        config["MODEL"] = model
 
     return config
 
@@ -60,14 +69,18 @@ def preprocess_image(img, target_size):
 
 
 def predict(img):
-    X = preprocess_image(img, target_size=(150, 150))
-    (interpreter, input_index, output_index) = model_globals["MODEL"]
-    interpreter.set_tensor(input_index, X)
-    interpreter.invoke()
-    preds = interpreter.get_tensor(output_index)
-
+    img = preprocess_image(img, target_size=(150, 150))
+    LAMBDA_TASK_ROOT = os.getenv("LAMBDA_TASK_ROOT")
+    if LAMBDA_TASK_ROOT is not None:
+        # We're running in Lambda
+        (interpreter, input_index, output_index) = model_globals["MODEL"]
+        interpreter.set_tensor(input_index, img)
+        interpreter.invoke()
+        preds = interpreter.get_tensor(output_index)
+    else:
+        model = model_globals["MODEL"]
+        preds = model.predict(img)
     float_predictions = preds[0].tolist()
-
     # return float_predictions
     [middle, old, young] = float_predictions
     output = {"young": young, "middle": middle, "old": old}
@@ -87,8 +100,12 @@ def index():
 
 @app.route("/predict", methods=["POST"])
 def predict_endpoint():
-    # print(request.environ)
-    img = download_image(request.json.get("url"))
+    print(request.files)
+    if 'file' in request.files:
+        img = Image.open(request.files["file"])
+    else:
+        url = request.json.get("url")
+        img = download_image(url)
     output = predict(img)
     return jsonify(results=output)
 
